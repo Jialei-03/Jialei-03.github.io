@@ -1,16 +1,17 @@
 // app.js
-// 渲染 Jialei-03 个人主页。
-// 静态内容从 data/site.js 读取;GitHub 资料从 API 实时拉取。
+// Academic CV renderer for a static GitHub Pages site.
 (function () {
   "use strict";
 
-  const cfg = window.SITE_CONFIG || { meta: {}, now: {}, contact: {}, featured: [] };
-  const GITHUB_USERNAME = (cfg.contact && cfg.contact.github) || "Jialei-03";
+  const cfg = window.SITE_CONFIG || {};
+  const profileCfg = cfg.profile || {};
+  const contactCfg = cfg.contact || {};
+  const metaCfg = cfg.meta || {};
+  const GITHUB_USERNAME = contactCfg.github || "Jialei-03";
   const PROFILE_URL = `https://api.github.com/users/${GITHUB_USERNAME}`;
   const REPOS_URL = `https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`;
   const PINNED_URL = `https://gh-pinned-repos.egoist.dev/?username=${GITHUB_USERNAME}`;
 
-  // 少量语言 -> 不同色象征色（仍然只用黑白与一个温热加重）
   const languageAccent = {
     JavaScript: "#1f1d1a",
     TypeScript: "#2b2a26",
@@ -32,9 +33,6 @@
   const $ = (sel, root) => (root || document).querySelector(sel);
   const $$ = (sel, root) => Array.from((root || document).querySelectorAll(sel));
 
-  // -----------------------------------------------------------------------
-  // 工具函数
-  // -----------------------------------------------------------------------
   function escapeHtml(value) {
     return String(value == null ? "" : value)
       .replaceAll("&", "&amp;")
@@ -72,66 +70,177 @@
     }
   }
 
-  // -----------------------------------------------------------------------
-  // 静态绑定: <... data-bind="now.focused">
-  // -----------------------------------------------------------------------
+  function valueAtPath(path) {
+    let cur = cfg;
+    for (const key of path.split(".")) {
+      if (cur == null) return undefined;
+      cur = cur[key];
+    }
+    return cur;
+  }
+
   function applyBindings() {
-    $$("[data-bind]").forEach((el) => {
-      const path = el.getAttribute("data-bind").split(".");
-      let cur = cfg;
-      for (const key of path) {
-        if (cur == null) break;
-        cur = cur[key];
-      }
-      if (cur == null || cur === "") return;
-      el.textContent = String(cur);
+    $$('[data-bind]').forEach((el) => {
+      const value = valueAtPath(el.getAttribute("data-bind"));
+      if (value == null || value === "") return;
+      el.textContent = String(value);
     });
 
-    // 年份
+    const displayName = profileCfg.name || metaCfg.name || `${profileCfg.chineseName || "李嘉磊"} / ${profileCfg.englishName || "Jialei Li"}`;
+    const title = `${displayName} · Academic CV`;
+    document.title = title;
+
     const yearEl = $("#footer-year");
     if (yearEl) yearEl.textContent = new Date().getFullYear();
-    const nowYear = $("#now-year");
-    if (nowYear) nowYear.textContent = new Date().getFullYear();
 
-    // GitHub 全局链接
-    const ghLinks = [$("#hero-github"), $("#cta-github")].filter(Boolean);
-    ghLinks.forEach((a) => {
+    [$("#hero-github"), $("#cta-github")].filter(Boolean).forEach((a) => {
       a.href = `https://github.com/${GITHUB_USERNAME}`;
     });
 
-    // 页脚下方 source 链接 → 当前仓库
-    $$('a[href*=".github.io"]').forEach((a) => {
+    $$("a[href*='.github.io']").forEach((a) => {
       a.href = `https://github.com/${GITHUB_USERNAME}/${GITHUB_USERNAME}.github.io`;
     });
   }
 
-  // -----------------------------------------------------------------------
-  // GitHub profile
-  // -----------------------------------------------------------------------
+  function renderPdfButton() {
+    const btn = $("#pdf-button");
+    if (!btn) return;
+    const pdf = profileCfg.pdf || {};
+    if (pdf.status === "available" && pdf.href) {
+      const link = document.createElement("a");
+      link.className = "button ghost";
+      link.href = pdf.href;
+      link.textContent = pdf.label || "PDF Resume";
+      link.setAttribute("download", "");
+      btn.replaceWith(link);
+      return;
+    }
+    btn.textContent = `${pdf.label || "PDF Resume"} · Coming soon`;
+    btn.setAttribute("aria-disabled", "true");
+    btn.disabled = true;
+  }
+
+  function renderList(containerId, items, emptyText, renderItem) {
+    const container = $(`#${containerId}`);
+    if (!container) return;
+    if (!Array.isArray(items) || !items.length) {
+      container.innerHTML = `<p class="empty-note">${escapeHtml(emptyText)}</p>`;
+      return;
+    }
+    container.innerHTML = items.map(renderItem).join("");
+  }
+
+  function renderCvSections() {
+    renderList(
+      "interest-list",
+      cfg.interests,
+      "Research interests will be added here.",
+      (item) => `<article class="interest-card">${escapeHtml(item)}</article>`
+    );
+
+    renderList(
+      "education-list",
+      cfg.education,
+      "Education entries will be added here.",
+      (item) => `
+        <article class="timeline-item">
+          <div class="timeline-meta">${escapeHtml(item.period || "")}</div>
+          <div>
+            <h4>${escapeHtml(item.school)}</h4>
+            <p class="timeline-degree">${escapeHtml(item.degree || "")}</p>
+            <p class="timeline-location">${escapeHtml(item.location || "")}</p>
+            <p>${escapeHtml(item.details || "")}</p>
+          </div>
+        </article>
+      `
+    );
+
+    renderList(
+      "project-list",
+      cfg.projects,
+      "Research projects will be added here.",
+      (item) => `
+        <article class="project-entry">
+          <div class="entry-main">
+            <p class="entry-kicker">${escapeHtml(item.role || "Project")}${item.period ? ` · ${escapeHtml(item.period)}` : ""}</p>
+            <h3>${item.link ? `<a href="${escapeHtml(item.link)}" target="_blank" rel="noreferrer">${escapeHtml(item.title)} ↗</a>` : escapeHtml(item.title)}</h3>
+            <p>${escapeHtml(item.summary || "")}</p>
+          </div>
+          <div class="tag-row">${(item.tags || []).map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}</div>
+        </article>
+      `
+    );
+
+    renderList(
+      "publication-list",
+      cfg.publications,
+      "Publications and writing will be added here.",
+      (item) => `
+        <article class="publication-item">
+          <div class="publication-year">${escapeHtml(item.year || "")}</div>
+          <div>
+            <h3>${item.link ? `<a href="${escapeHtml(item.link)}" target="_blank" rel="noreferrer">${escapeHtml(item.title)} ↗</a>` : escapeHtml(item.title)}</h3>
+            <p class="authors">${escapeHtml(item.authors || "")}</p>
+            <p class="venue">${escapeHtml(item.venue || "")}${item.status ? ` · ${escapeHtml(item.status)}` : ""}</p>
+          </div>
+        </article>
+      `
+    );
+
+    renderList(
+      "skill-list",
+      cfg.skills,
+      "Skills will be added here.",
+      (group) => `
+        <article class="skill-group">
+          <h3>${escapeHtml(group.group)}</h3>
+          <div class="skill-chip-row">${(group.items || []).map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div>
+        </article>
+      `
+    );
+
+    renderList(
+      "award-list",
+      cfg.awards,
+      "Awards and honors will be added here.",
+      (item) => `
+        <article class="award-item">
+          <span>${escapeHtml(item.year || "")}</span>
+          <div>
+            <h3>${escapeHtml(item.title)}</h3>
+            <p>${escapeHtml(item.description || "")}</p>
+          </div>
+        </article>
+      `
+    );
+  }
+
   async function loadProfile() {
+    const displayName = profileCfg.name || metaCfg.name || `${profileCfg.chineseName || "李嘉磊"} / ${profileCfg.englishName || "Jialei Li"}`;
+    const profileStatus = $("#profile-status");
     try {
       const profile = await fetchJson(PROFILE_URL);
-      $("#avatar").src = profile.avatar_url || `https://github.com/${GITHUB_USERNAME}.png`;
-      // 优先用 SITE_CONFIG 里的显示名，再走 GitHub profile，最后降级到用户名
-      const displayName = (cfg.meta && cfg.meta.name) || profile.name || profile.login || GITHUB_USERNAME;
-      $("#profile-name").textContent = displayName;
-      $("#bio").textContent = profile.bio || cfg.meta.tagline || "一个安静的个人主页，用来收纳公开项目、GitHub 资料和正在发生的创造。";
+      const avatar = $("#avatar");
+      if (avatar) avatar.src = profile.avatar_url || `https://github.com/${GITHUB_USERNAME}.png`;
+      const h1 = $("#profile-name");
+      if (h1) h1.textContent = displayName;
+      if (profileStatus) profileStatus.textContent = profile.bio ? "GitHub profile linked" : "GitHub public profile";
       $("#public-repos").textContent = formatNumber(profile.public_repos);
       $("#followers").textContent = formatNumber(profile.followers);
       $("#following").textContent = formatNumber(profile.following);
       $("#gists").textContent = formatNumber(profile.public_gists);
     } catch (err) {
       console.info("GitHub profile unavailable.", err);
-      $("#public-repos").textContent = "--";
-      $("#followers").textContent = "--";
-      $("#following").textContent = "--";
-      $("#gists").textContent = "--";
+      const h1 = $("#profile-name");
+      if (h1) h1.textContent = displayName;
+      if (profileStatus) profileStatus.textContent = "GitHub temporarily unavailable";
+      ["#public-repos", "#followers", "#following", "#gists"].forEach((sel) => {
+        const el = $(sel);
+        if (el) el.textContent = "--";
+      });
     }
   }
 
-  // -----------------------------------------------------------------------
-  // Featured / Pinned repos
-  // -----------------------------------------------------------------------
   function normalizePinnedRepo(repo) {
     return {
       name: repo.repo,
@@ -169,12 +278,7 @@
           <h3 class="repo-title">${escapeHtml(repo.name)}</h3>
           <p class="repo-description">${escapeHtml(repo.description || "No description yet.")}</p>
         </div>
-        <div class="repo-meta">
-          ${lang}
-          ${stars}
-          ${forks}
-          ${updated}
-        </div>
+        <div class="repo-meta">${lang}${stars}${forks}${updated}</div>
       </a>
     `;
   }
@@ -183,46 +287,39 @@
     const grid = $("#repo-grid");
     const status = $("#work-status");
     if (!grid || !status) return;
-    grid.innerHTML = "";
     if (repos.length) {
       grid.innerHTML = repos.map(repoCardHtml).join("");
-      status.textContent = statusText || `${sourceLabel} · 展示 ${repos.length} 个仓库`;
+      status.textContent = statusText || `${sourceLabel} · ${repos.length} repositories`;
     } else {
-      status.textContent = "暂时没有可展示的公开仓库。";
+      grid.innerHTML = "";
+      status.textContent = "No public repositories to show yet.";
     }
   }
 
   function renderFallbackRepo() {
     renderRepos(
-      [
-        {
-          name: `${GITHUB_USERNAME} on GitHub`,
-          description:
-            "GitHub API 暂时不可用时，这张卡片会保留通往个人主页的入口。刷新后会自动重试。",
-          htmlUrl: `https://github.com/${GITHUB_USERNAME}`,
-          language: "GitHub",
-          stars: null,
-          forks: null,
-          updatedAt: null,
-        },
-      ],
+      [{
+        name: `${GITHUB_USERNAME} on GitHub`,
+        description: "GitHub API is temporarily unavailable; this card keeps the source profile reachable.",
+        htmlUrl: `https://github.com/${GITHUB_USERNAME}`,
+        language: "GitHub",
+        stars: null,
+        forks: null,
+        updatedAt: null,
+      }],
       "GitHub profile",
-      "GitHub 仓库数据暂时读取失败，已保留个人主页入口。"
+      "GitHub repository data is temporarily unavailable."
     );
   }
 
   async function loadRepositories() {
-    // 如果用户在 site.js 里手动指定了 featured，先去拉这些仓库的详情
     if (Array.isArray(cfg.featured) && cfg.featured.length) {
       try {
         const all = await fetchJson(REPOS_URL);
         const byName = new Map(all.map((r) => [r.name, r]));
-        const repos = cfg.featured
-          .map((name) => byName.get(name))
-          .filter(Boolean)
-          .map(normalizeRestRepo);
+        const repos = cfg.featured.map((name) => byName.get(name)).filter(Boolean).map(normalizeRestRepo);
         if (repos.length) {
-          renderRepos(repos, "Featured", `site.js 中指定的 ${repos.length} 个仓库`);
+          renderRepos(repos, "Featured code", `${repos.length} selected repositories from data/site.js`);
           return;
         }
       } catch (err) {
@@ -232,9 +329,9 @@
 
     try {
       const pinned = await fetchJson(PINNED_URL);
-      const repos = pinned.map(normalizePinnedRepo).slice(0, 6);
+      const repos = pinned.map(normalizePinnedRepo).slice(0, 4);
       if (repos.length) {
-        renderRepos(repos, "Pinned repositories");
+        renderRepos(repos, "Pinned code");
         return;
       }
     } catch (err) {
@@ -249,20 +346,15 @@
           (b.stargazers_count || 0) - (a.stargazers_count || 0) ||
           new Date(b.updated_at) - new Date(a.updated_at)
         )
-        .slice(0, 6)
+        .slice(0, 4)
         .map(normalizeRestRepo);
-      renderRepos(repos, "Public repositories");
+      renderRepos(repos, "Public code");
     } catch (err) {
       console.info("REST repositories unavailable.", err);
-      $("#work-status").textContent =
-        "仓库数据暂时读取失败。你仍然可以通过顶部按钮访问 GitHub。";
       renderFallbackRepo();
     }
   }
 
-  // -----------------------------------------------------------------------
-  // Stack · 从仓库语言字段统计
-  // -----------------------------------------------------------------------
   function renderStack(repos) {
     const grid = $("#stack-grid");
     if (!grid) return;
@@ -270,16 +362,14 @@
     let totalBytes = 0;
     repos.forEach((repo) => {
       if (!repo.language || repo.fork) return;
-      const bytes = (repo.size || 1) * 1024; // 粗略以 repo.size KB 作为权重
+      const bytes = (repo.size || 1) * 1024;
       tally.set(repo.language, (tally.get(repo.language) || 0) + bytes);
       totalBytes += bytes;
     });
-    const entries = Array.from(tally.entries())
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 8);
+    const entries = Array.from(tally.entries()).sort((a, b) => b[1] - a[1]).slice(0, 6);
     if (!entries.length) {
       grid.style.gridTemplateColumns = "minmax(0, 1fr)";
-      grid.innerHTML = `<p class="status" style="grid-column: 1 / -1; background: var(--paper-soft); padding: 18px 22px; color: var(--muted);">还没有足够的仓库语言数据。</p>`;
+      grid.innerHTML = `<p class="status panel-status">语言统计暂时读不到。</p>`;
       return;
     }
     grid.style.gridTemplateColumns = "";
@@ -307,51 +397,55 @@
     } catch (err) {
       console.info("Stack unavailable.", err);
       const grid = $("#stack-grid");
-      if (grid) { grid.style.gridTemplateColumns = "minmax(0, 1fr)"; grid.innerHTML = `<p class="status" style="grid-column: 1 / -1; background: var(--paper-soft); padding: 18px 22px; color: var(--muted);">语言统计暂时读不到。</p>`; }
+      if (grid) {
+        grid.style.gridTemplateColumns = "minmax(0, 1fr)";
+        grid.innerHTML = `<p class="status panel-status">语言统计暂时读不到。</p>`;
+      }
     }
   }
 
-  // -----------------------------------------------------------------------
-  // Contact · 从 site.js 动态生成
-  // -----------------------------------------------------------------------
   function renderContact() {
     const grid = $("#contact-grid");
     if (!grid) return;
-    const c = cfg.contact || {};
+    const email = profileCfg.email || contactCfg.email;
     const items = [
-      c.email    && { label: "Email",    value: c.email,                href: `mailto:${c.email}` },
-      c.github   && { label: "GitHub",   value: `@${c.github}`,         href: `https://github.com/${c.github}` },
-      c.twitter  && { label: "Twitter",  value: `@${c.twitter}`,        href: `https://twitter.com/${c.twitter}` },
-      c.linkedin && { label: "LinkedIn", value: c.linkedin,             href: c.linkedin.startsWith("http") ? c.linkedin : `https://linkedin.com/in/${c.linkedin}` },
-      c.website  && { label: "Website",  value: c.website.replace(/^https?:\/\//, ""), href: c.website },
+      email && { label: "Email", value: email, href: `mailto:${email}` },
+      contactCfg.github && { label: "GitHub", value: `@${contactCfg.github}`, href: `https://github.com/${contactCfg.github}` },
+      contactCfg.twitter && { label: "Twitter", value: `@${contactCfg.twitter}`, href: `https://twitter.com/${contactCfg.twitter}` },
+      contactCfg.linkedin && {
+        label: "LinkedIn",
+        value: contactCfg.linkedin,
+        href: contactCfg.linkedin.startsWith("http") ? contactCfg.linkedin : `https://linkedin.com/in/${contactCfg.linkedin}`,
+      },
+      contactCfg.website && { label: "Website", value: contactCfg.website.replace(/^https?:\/\//, ""), href: contactCfg.website },
     ].filter(Boolean);
 
+    if (email) {
+      const heroEmail = $("#hero-email");
+      if (heroEmail) heroEmail.href = `mailto:${email}`;
+    }
+
     if (!items.length) {
-      grid.innerHTML = `<p class="contact-empty">在 <code>data/site.js</code> 里填上 email / twitter 等信息后,这里会自动出现联系卡片。</p>`;
+      grid.innerHTML = `<p class="contact-empty">在 <code>data/site.js</code> 中填入 email / website 等信息后,这里会自动生成联系入口。</p>`;
       return;
     }
+
     grid.innerHTML = items
-      .map(
-        (it) => `
-          <a class="contact-card" href="${escapeHtml(it.href)}" target="_blank" rel="noreferrer">
-            <span class="contact-label">${escapeHtml(it.label)}</span>
-            <span class="contact-value">${escapeHtml(it.value)}</span>
-            <span class="contact-arrow">↗</span>
-          </a>
-        `
-      )
+      .map((it) => `
+        <a class="contact-card" href="${escapeHtml(it.href)}" target="_blank" rel="noreferrer">
+          <span class="contact-label">${escapeHtml(it.label)}</span>
+          <span class="contact-value">${escapeHtml(it.value)}</span>
+          <span class="contact-arrow">↗</span>
+        </a>
+      `)
       .join("");
   }
 
-  // -----------------------------------------------------------------------
-  // 主题切换 / 菜单切换 / 滑入动画 / 本地时间
-  // -----------------------------------------------------------------------
   function setupTheme() {
     const root = document.documentElement;
     const stored = window.localStorage.getItem("theme");
     const initial = stored || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     root.setAttribute("data-theme", initial);
-
     const btn = $("#theme-toggle");
     if (!btn) return;
     btn.addEventListener("click", () => {
@@ -387,45 +481,36 @@
   }
 
   function setupReveal() {
-    const targets = $$(".section, .hero, .stats");
+    const targets = $$(".section, .hero, .cv-snapshot");
     targets.forEach((el) => el.classList.add("reveal"));
-    // 安全网：1.5s 后任何未观察到的元素都会被加上 .in，避免由于浏览器问题或初始 scroll 未触发而隐藏内容。
-    const safety = window.setTimeout(() => {
-      targets.forEach((el) => el.classList.add("in"));
-    }, 1500);
+    window.setTimeout(() => targets.forEach((el) => el.classList.add("in")), 1500);
     if (!("IntersectionObserver" in window)) {
       targets.forEach((el) => el.classList.add("in"));
       return;
     }
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add("in");
-            io.unobserve(e.target);
-          }
-        });
-      },
-      { rootMargin: "0px 0px -8% 0px", threshold: 0.04 }
-    );
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add("in");
+          io.unobserve(e.target);
+        }
+      });
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.04 });
     targets.forEach((el) => io.observe(el));
-    return () => window.clearTimeout(safety);
   }
 
   function setupLocalTime() {
     const el = $("#local-time");
     if (!el) return;
-    const tz = cfg.meta && cfg.meta.timezone;
+    const tz = metaCfg.timezone;
     const update = () => {
       try {
-        const now = new Date();
-        const fmt = new Intl.DateTimeFormat("zh-CN", {
+        el.textContent = new Intl.DateTimeFormat("zh-CN", {
           hour: "2-digit",
           minute: "2-digit",
           hour12: false,
           timeZone: tz || undefined,
-        });
-        el.textContent = fmt.format(now);
+        }).format(new Date());
       } catch (_) {
         el.textContent = new Date().toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit", hour12: false });
       }
@@ -434,11 +519,10 @@
     window.setInterval(update, 30 * 1000);
   }
 
-  // -----------------------------------------------------------------------
-  // 启动
-  // -----------------------------------------------------------------------
   function init() {
     applyBindings();
+    renderPdfButton();
+    renderCvSections();
     renderContact();
     setupTheme();
     setupMenu();

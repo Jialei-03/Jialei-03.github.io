@@ -1,22 +1,6 @@
-# Jialei-03 个人主页
+# 李嘉磊 / Jialei Li Academic CV
 
-一个以 GitHub 为后台的纯静态个人主页。以上架构,以下是快速介绍。
-
-## 结构
-
-```
-.
-├─ index.html          # 页面骨架，包含 hero / stats / now / work / stack / contact
-├─ styles.css          # 纸感编辑风格、黑色模式、响应式布局
-├─ app.js              # 读取 GitHub API 、绘制 repo / stack / contact、主题切换
-├─ data/
-│  └─ site.js        # 一个文件定制主页:身份、Now、联系入口
-├─ assets/             # 留给你放图 / 定制资源
-├─ bin/                # 一键脚本(例如 push.sh)。空目录,下面有例
-├─ .nojekyll           # 告诉 GitHub Pages 不走 Jekyll,原样输出仓库文件
-├─ DEPLOY.md           # 三行命令上线指南
-└─ README.md
-```
+一个部署在 GitHub Pages 上的纯静态学术 CV + 个人名片页面。页面保留纸感编辑风与暗色模式,内容由 `data/site.js` 驱动,适合长期维护教育背景、研究方向、项目、论文、技能和联系方式。
 
 ## 本地预览
 
@@ -26,30 +10,48 @@ python3 -m http.server 8765
 # 打开 http://127.0.0.1:8765
 ```
 
-也可以直接双击 `index.html` 在浏览器里看(但那样 GitHub API 请求在 `file://` 协议下会被拒绝)。
+## 修改内容
 
-## 个性化
+大多数 CV 信息只需要编辑 [`data/site.js`](./data/site.js):
 
-- 改给 GitHub 看的内容（头像、简介、统计、仓库）: 你只需要在 GitHub 上修改你的 profile
-- 改静态显示的内容（你是谁、现在在做什么、联系方式）: 编辑 [`data/site.js`](./data/site.js)。不用动 HTML/CSS。
+- `profile`: 姓名、身份、地点、摘要、PDF 简历状态
+- `interests`: 研究兴趣
+- `education`: 教育经历
+- `projects`: 研究/工程项目
+- `publications`: 论文、preprint、技术报告或项目笔记
+- `skills`: 技能分组
+- `awards`: 荣誉/奖项
+- `contact`: Email、GitHub、LinkedIn 等链接
 
-## 部署到 GitHub Pages
+PDF 简历按钮目前是 `Coming soon`;如果将来要启用,把 PDF 放到 `assets/lijialei-resume.pdf`,并在 `data/site.js` 中把 `profile.pdf.status` 改成 `available`。
 
-详见 [`DEPLOY.md`](./DEPLOY.md)。总之是 3 步:
+## 部署
 
-1. 在 GitHub 上创建名为 `Jialei-03.github.io` 的公开仓库（跳过初始化选项）
-2. 本地一个 `git init` + `git push` 推送
-3. 在仓库 Settings → Pages 里选 main / root，等 30 秒
+仓库: https://github.com/Jialei-03/Jialei-03.github.io
 
-最后会拿到 `https://Jialei-03.github.io` 这个公开地址。
+上线地址: https://jialei-03.github.io/
+
+常规更新:
+
+```bash
+git add -A
+git commit -m "update academic cv"
+git push
+```
+
+也可以使用:
+
+```bash
+bin/push.sh "update academic cv"
+```
 
 ## 技术说明
 
-- 零依赖、零构建、纯静态：HTML + CSS + JS
-- 动态部分只是 fetch 几个 GitHub API，所以在客户端跑,页面本身不依赖任何后端
-- 主题、语言、联系信息都在本地 `data/site.js` 里，不需重新部署就能改
-- `prefers-reduced-motion` 与调节动画都被依照
+- 纯静态: HTML + CSS + JavaScript,无构建步骤
+- GitHub API 仅作为辅助:头像、公开仓库统计、置顶仓库和语言占比
+- GitHub API 不可用时,静态 CV 内容仍完整可读
+- 支持暗色模式、移动端单列布局、键盘导航和 `prefers-reduced-motion`
 
 ## License
 
-代码以 MIT 许可发布，文本/人人为你本人。
+MIT

@@ -3,12 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="description" content="lijialei 的个人主页。展示 GitHub 资料、正在做的事和技术栈。" />
+    <meta name="description" content="李嘉磊 / Jialei Li 的学术 CV 与个人名片。" />
     <meta name="theme-color" content="#f7f5ef" />
-    <meta property="og:title" content="lijialei · Personal Homepage" />
-    <meta property="og:description" content="个人主页 · 展示 GitHub 资料与项目" />
+    <meta property="og:title" content="李嘉磊 / Jialei Li · Academic CV" />
+    <meta property="og:description" content="Academic CV, research interests, projects, publications, and contact links." />
     <meta property="og:type" content="profile" />
-    <title>lijialei · Personal Homepage</title>
+    <title>李嘉磊 / Jialei Li · Academic CV</title>
     <link rel="preconnect" href="https://api.github.com" crossorigin />
     <link rel="preconnect" href="https://github.com" crossorigin />
     <link rel="preconnect" href="https://gh-pinned-repos.egoist.dev" crossorigin />
@@ -21,21 +21,21 @@
     <header class="topbar" id="topbar" data-elevated="false">
       <a class="brand" href="#top" aria-label="返回顶部">
         <span class="brand-mark" aria-hidden="true">◐</span>
-        <span class="brand-name" data-bind="meta.name">lijialei</span>
+        <span class="brand-name" data-bind="meta.brand">lijialei</span>
       </a>
       <nav class="topnav" id="topnav" aria-label="主导航">
-        <a href="#now">Now</a>
-        <a href="#work">Work</a>
-        <a href="#stack">Stack</a>
+        <a href="#about">About</a>
+        <a href="#research">Research</a>
+        <a href="#projects">Projects</a>
+        <a href="#publications">Publications</a>
+        <a href="#skills">Skills</a>
         <a href="#contact">Contact</a>
       </nav>
       <div class="topbar-actions">
         <button class="theme-toggle" id="theme-toggle" type="button" aria-label="切换深色模式" title="切换深色模式">
           <span class="theme-icon" aria-hidden="true">◑</span>
         </button>
-        <a class="cta" id="cta-github" href="#" target="_blank" rel="noreferrer">
-          GitHub ↗
-        </a>
+        <a class="cta" id="cta-github" href="#" target="_blank" rel="noreferrer">GitHub ↗</a>
         <button class="menu-toggle" id="menu-toggle" type="button" aria-label="菜单" aria-expanded="false">
           <span class="menu-bars" aria-hidden="true"></span>
         </button>
@@ -45,41 +45,56 @@
     <main id="main">
       <span id="top" aria-hidden="true"></span>
 
-      <section class="hero" aria-labelledby="profile-name">
-        <div class="hero-grid">
-          <div class="profile-portrait" aria-hidden="true">
-            <img id="avatar" src="https://github.com/Jialei-03.png" alt="" width="220" height="220" />
-            <span class="portrait-meta" aria-hidden="true">
-              <span data-bind="meta.location">Shanghai, CN</span>
-            </span>
-          </div>
+      <section class="hero cv-hero" aria-labelledby="profile-name">
+        <div class="cv-hero-grid">
+          <aside class="cv-card cv-identity" aria-label="Profile summary">
+            <div class="profile-portrait" aria-hidden="true">
+              <img id="avatar" src="https://github.com/Jialei-03.png" alt="" width="220" height="220" />
+              <span class="portrait-meta" aria-hidden="true"><span data-bind="meta.location">Shanghai, CN</span></span>
+            </div>
+            <dl class="identity-meta">
+              <div>
+                <dt>Location</dt>
+                <dd data-bind="profile.location">Shanghai, CN</dd>
+              </div>
+              <div>
+                <dt>Focus</dt>
+                <dd>RecSys · RAG · LLM</dd>
+              </div>
+              <div>
+                <dt>Profile</dt>
+                <dd id="profile-status">GitHub public profile</dd>
+              </div>
+            </dl>
+          </aside>
 
-          <div class="profile-copy">
+          <div class="profile-copy cv-copy">
             <p class="eyebrow">
               <span class="eyebrow-dot" aria-hidden="true"></span>
-              <span data-bind="meta.role">Student · Builder</span>
+              <span data-bind="profile.title">Student · Research Builder</span>
             </p>
-            <h1 id="profile-name">lijialei</h1>
-            <p id="bio" class="tagline">
-              正在从 GitHub 读取公开资料。网络临时拥挤时,这里会保持一个干净可访问的主页。
+            <h1 id="profile-name">李嘉磊 / Jialei Li</h1>
+            <p id="bio" class="tagline" data-bind="profile.summary">
+              我目前关注推荐系统、信息检索与大语言模型相关方向,尤其是如何把模型能力落到可验证、可复现、可维护的研究与工程系统中。
             </p>
-
-            <div class="actions" aria-label="主要链接">
+            <p class="tagline secondary" data-bind="profile.summaryEn">
+              I am interested in recommender systems, retrieval-augmented methods, and LLM reasoning.
+            </p>
+            <div class="actions" aria-label="CV actions">
               <a class="button primary" id="hero-github" href="#" target="_blank" rel="noreferrer">
-                <span>访问 GitHub</span>
-                <span aria-hidden="true">→</span>
+                <span>GitHub</span><span aria-hidden="true">→</span>
               </a>
-              <a class="button" href="#work">看仓库</a>
-              <a class="button ghost" href="#contact">联系</a>
+              <a class="button" id="hero-email" href="#contact">Email</a>
+              <button class="button ghost is-disabled" id="pdf-button" type="button" aria-disabled="true">PDF Resume · Coming soon</button>
             </div>
           </div>
         </div>
       </section>
 
-      <section class="stats" aria-label="GitHub 统计">
+      <section class="cv-snapshot" aria-label="Academic profile snapshot">
         <article>
           <span id="public-repos">--</span>
-          <p>Repositories</p>
+          <p>Public Repos</p>
         </article>
         <article>
           <span id="followers">--</span>
@@ -95,65 +110,104 @@
         </article>
       </section>
 
-      <section id="now" class="section now" aria-labelledby="now-heading">
+      <section id="about" class="section cv-section" aria-labelledby="about-heading">
         <header class="section-heading">
           <div>
-            <p class="eyebrow">Now · <span id="now-year">2026</span></p>
-            <h2 id="now-heading">现在在做什么</h2>
+            <p class="eyebrow">About · 简介</p>
+            <h2 id="about-heading">Academic profile</h2>
           </div>
-          <p class="section-note">主页每几个月随手更一次,反映最近一两个月的状态。</p>
+          <p class="section-note">A concise CV-style overview for readers who want the map before the details.</p>
         </header>
-        <div class="now-grid">
-          <article>
-            <p class="now-label">Focused on</p>
-            <p class="now-value" data-bind="now.focused">把 GitHub 上零散的项目沉淀成作品集</p>
-          </article>
-          <article>
-            <p class="now-label">Learning</p>
-            <p class="now-value" data-bind="now.learning">推荐系统 · 检索增强 · LLM 推理</p>
-          </article>
-          <article>
-            <p class="now-label">Building</p>
-            <p class="now-value" data-bind="now.building">dllmrec · minionerec · 这个主页</p>
-          </article>
-          <article>
-            <p class="now-label">Reading</p>
-            <p class="now-value" data-bind="now.reading">一本关于 XX 的小书</p>
-          </article>
+        <div class="about-panel">
+          <p data-bind="profile.summary">我目前关注推荐系统、信息检索与大语言模型相关方向。</p>
+          <p data-bind="profile.summaryEn">I am interested in recommender systems, retrieval-augmented methods, and LLM reasoning.</p>
         </div>
       </section>
 
-      <section id="work" class="section work" aria-labelledby="work-heading">
+      <section id="research" class="section cv-section" aria-labelledby="research-heading">
         <header class="section-heading">
           <div>
-            <p class="eyebrow">Pinned · GitHub</p>
-            <h2 id="work-heading">精选仓库</h2>
+            <p class="eyebrow">Research · 研究方向</p>
+            <h2 id="research-heading">Interests & Education</h2>
           </div>
-          <p class="section-note" id="work-status">正在加载置顶仓库...</p>
+          <p class="section-note">Research interests, education, and the current academic direction.</p>
         </header>
-        <div id="repo-grid" class="repo-grid" aria-live="polite"></div>
-      </section>
-
-      <section id="stack" class="section stack" aria-labelledby="stack-heading">
-        <header class="section-heading">
+        <div class="cv-two-column">
           <div>
-            <p class="eyebrow">Stack · 技术栈</p>
-            <h2 id="stack-heading">常用的语言与工具</h2>
+            <h3 class="subsection-title">Research Interests</h3>
+            <div id="interest-list" class="interest-grid"></div>
           </div>
-          <p class="section-note">从公开仓库的 language 字段耦合,会跟随仓库自动更新。</p>
-        </header>
-        <div id="stack-grid" class="stack-grid" aria-live="polite">
-          <p class="status">正在计算语言占比...</p>
+          <div>
+            <h3 class="subsection-title">Education</h3>
+            <div id="education-list" class="timeline"></div>
+          </div>
         </div>
       </section>
 
-      <section id="contact" class="section contact" aria-labelledby="contact-heading">
+      <section id="projects" class="section cv-section" aria-labelledby="projects-heading">
         <header class="section-heading">
           <div>
-            <p class="eyebrow">Get in touch</p>
-            <h2 id="contact-heading">来找我</h2>
+            <p class="eyebrow">Projects · 研究/工程项目</p>
+            <h2 id="projects-heading">Research / Projects</h2>
           </div>
-          <p class="section-note">最便捷的方式是折到 GitHub 发 Issue 或私信。</p>
+          <p class="section-note">Static CV entries first; selected GitHub code is kept as supporting evidence.</p>
+        </header>
+        <div id="project-list" class="project-list"></div>
+        <div class="code-block-heading">
+          <h3 class="subsection-title">Selected Code</h3>
+          <p class="section-note" id="work-status">正在加载 GitHub 置顶仓库...</p>
+        </div>
+        <div id="repo-grid" class="repo-grid compact" aria-live="polite"></div>
+      </section>
+
+      <section id="publications" class="section cv-section" aria-labelledby="publications-heading">
+        <header class="section-heading">
+          <div>
+            <p class="eyebrow">Publications · 论文/产出</p>
+            <h2 id="publications-heading">Publications & Writing</h2>
+          </div>
+          <p class="section-note">Papers, preprints, technical reports, or project notes can live here.</p>
+        </header>
+        <div id="publication-list" class="publication-list"></div>
+      </section>
+
+      <section id="skills" class="section cv-section" aria-labelledby="skills-heading">
+        <header class="section-heading">
+          <div>
+            <p class="eyebrow">Skills · 技能</p>
+            <h2 id="skills-heading">Skills & Technical Stack</h2>
+          </div>
+          <p class="section-note">CV skill groups plus lightweight GitHub language statistics.</p>
+        </header>
+        <div class="cv-two-column skills-layout">
+          <div id="skill-list" class="skill-groups"></div>
+          <div>
+            <h3 class="subsection-title">GitHub Language Signals</h3>
+            <div id="stack-grid" class="stack-grid" aria-live="polite">
+              <p class="status">正在计算语言占比...</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="awards" class="section cv-section" aria-labelledby="awards-heading">
+        <header class="section-heading">
+          <div>
+            <p class="eyebrow">Honors · 荣誉</p>
+            <h2 id="awards-heading">Awards & Honors</h2>
+          </div>
+          <p class="section-note">Scholarships, competitions, awards, and selected recognition.</p>
+        </header>
+        <div id="award-list" class="award-list"></div>
+      </section>
+
+      <section id="contact" class="section cv-section contact" aria-labelledby="contact-heading">
+        <header class="section-heading">
+          <div>
+            <p class="eyebrow">Contact · 联系</p>
+            <h2 id="contact-heading">Contact</h2>
+          </div>
+          <p class="section-note">For collaboration, research discussion, or project follow-up.</p>
         </header>
         <div class="contact-grid" id="contact-grid"></div>
       </section>
@@ -161,16 +215,12 @@
 
     <footer class="footer">
       <div class="footer-row">
-        <span>© <span id="footer-year">2026</span> <span data-bind="meta.name">lijialei</span></span>
+        <span>© <span id="footer-year">2026</span> <span data-bind="profile.chineseName">李嘉磊</span> / <span data-bind="profile.englishName">Jialei Li</span></span>
         <span aria-hidden="true">·</span>
-        <span>Built for GitHub Pages · vanilla HTML / CSS / JS</span>
+        <span><span data-bind="meta.brand">lijialei</span> · Academic CV</span>
       </div>
       <div class="footer-row">
-        <span>
-          当前时间
-          <time id="local-time">--:--</time>
-          · <span data-bind="meta.timezone">Asia/Shanghai</span>
-        </span>
+        <span>当前时间 <time id="local-time">--:--</time> · <span data-bind="meta.timezone">Asia/Shanghai</span></span>
         <span aria-hidden="true">·</span>
         <a href="https://github.com/Jialei-03/Jialei-03.github.io" target="_blank" rel="noreferrer">Source</a>
       </div>

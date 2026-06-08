@@ -1,41 +1,137 @@
 // data/site.js
-// 在这里改你的静态信息(身份、Now、联系入口)。
-// 头像/简介/统计/置顶仓库/Language 占比都由 GitHub API 在浏览器里实时拉取。
-//
-// 用法:把字段后面的内容替换成你的即可,字段名请保持不变。
-// 留空的字段(比如 twitter)会自动从页面上隐藏,不会显示空卡片。
+// Academic CV configuration. Edit this file to update the site without touching HTML/CSS.
+// Empty optional fields are either hidden or rendered as a clear placeholder.
 
 window.SITE_CONFIG = {
   meta: {
-    // 你希望别人怎么称呼你 / 你是谁
-    name: "lijialei",
-    role: "Student · Builder",          // 例:"PhD Student @ XX" / "Software Engineer"
-    location: "Shanghai, CN",                 // 留空就不显示城市
-    timezone: "Asia/Shanghai",                // footer 用,显示当前时间
-    tagline: "把零散的项目慢慢沉淀成可读的作品集。",
+    name: "李嘉磊 / Jialei Li",
+    brand: "lijialei",
+    role: "Student · Research Builder",
+    location: "Shanghai, CN",
+    timezone: "Asia/Shanghai",
+    tagline:
+      "关注推荐系统、检索增强与大语言模型推理,希望把研究问题、工程实现和可复现实验连接起来。",
+    updatedAt: "2026-06",
   },
 
-  // 4 张 Now 卡片 —— 反映最近一两个月在做/在学/在读什么
-  now: {
-    focused:  "把 GitHub 上零散的项目沉淀成作品集",   // 现在主攻
-    learning: "推荐系统 · 检索增强 · LLM 推理",   // 正在学/补课
-    building: "dllmrec · minionerec · 这个主页",  // 正在写的项目
-    reading:  "一本关于 XX 的小书",                       // 正在读
+  profile: {
+    chineseName: "李嘉磊",
+    englishName: "Jialei Li",
+    brand: "lijialei",
+    title: "Student · Research Builder",
+    location: "Shanghai, CN",
+    email: "",
+    summary:
+      "我目前关注推荐系统、信息检索与大语言模型相关方向,尤其是如何把模型能力落到可验证、可复现、可维护的研究与工程系统中。这个页面会持续沉淀我的研究兴趣、项目、论文/产出与联系方式。",
+    summaryEn:
+      "I am interested in recommender systems, retrieval-augmented methods, and LLM reasoning, with a practical focus on reproducible experiments and maintainable research prototypes.",
+    pdf: {
+      status: "coming-soon",
+      href: "./assets/lijialei-resume.pdf",
+      label: "PDF Resume",
+    },
   },
 
-  // 联系入口:留空就隐藏
   contact: {
-    email:    "",                              // 例:"you@domain.com"
-    github:   "Jialei-03",
-    twitter:  "",                              // 例:"leslie_x"
+    email: "",
+    github: "Jialei-03",
+    twitter: "",
     linkedin: "",
-    website:  "",                              // 例:"https://leslie.dev"
+    website: "",
   },
 
-  // 想强制把某几个仓库置顶到「精选仓库」,在这里写仓库名数组;
-  // 留空 [] 时,自动展示 GitHub 上的 Pinned Repositories。
-  featured: [],
+  interests: [
+    "推荐系统 / Recommender Systems",
+    "检索增强生成 / Retrieval-Augmented Generation",
+    "大语言模型推理 / LLM Reasoning",
+    "可复现实验与研究型工程 / Reproducible Research Engineering",
+  ],
 
-  // 页脚版本号 / 最后更新
-  updatedAt: "2026-06",
+  education: [
+    {
+      school: "待补充 University / Institute",
+      degree: "B.S. / M.S. / Ph.D. Candidate",
+      period: "20XX - Present",
+      location: "City, Country",
+      details:
+        "研究方向、导师、实验室或主修课程可写在这里。建议保留 1-2 句话,让读者快速理解你的学术背景。",
+    },
+    {
+      school: "Previous Education",
+      degree: "Degree / Program",
+      period: "20XX - 20XX",
+      location: "City, Country",
+      details: "GPA、排名、荣誉课程或与研究方向相关的经历可以放在这里。",
+    },
+  ],
+
+  projects: [
+    {
+      title: "UniGRec",
+      role: "Research / Implementation",
+      period: "2026",
+      summary:
+        "围绕统一生成式推荐与端到端优化的公开实现。这里可以补充你的具体贡献、方法亮点、实验设置和结果。",
+      tags: ["Recommendation", "Generative Models", "Python"],
+      link: "https://github.com/Jialei-03/UniGRec",
+    },
+    {
+      title: "dllmrec / minionerec",
+      role: "Exploratory Research Prototype",
+      period: "2026",
+      summary:
+        "用于探索推荐系统、检索或 LLM 相关想法的研究型代码库。建议写清楚问题、方法、贡献和可复现入口。",
+      tags: ["LLM", "Retrieval", "Research Prototype"],
+      link: "https://github.com/Jialei-03",
+    },
+  ],
+
+  publications: [
+    {
+      title: "Paper title placeholder: Method, Dataset, or System Name",
+      authors: "Jialei Li, Co-author A, Co-author B",
+      venue: "Under preparation / Preprint / Conference",
+      year: "2026",
+      status: "Manuscript in progress",
+      link: "",
+    },
+    {
+      title: "Technical report or project note placeholder",
+      authors: "Jialei Li",
+      venue: "Project note",
+      year: "2026",
+      status: "Draft",
+      link: "",
+    },
+  ],
+
+  skills: [
+    {
+      group: "Research",
+      items: ["Recommender Systems", "Information Retrieval", "LLM Evaluation", "Experiment Design"],
+    },
+    {
+      group: "Engineering",
+      items: ["Python", "PyTorch", "JavaScript", "Git", "Static Web"],
+    },
+    {
+      group: "Workflow",
+      items: ["Literature Review", "Reproducible Pipelines", "Technical Writing", "Open-source Maintenance"],
+    },
+  ],
+
+  awards: [
+    {
+      title: "Award / Scholarship placeholder",
+      year: "20XX",
+      description: "把奖学金、竞赛、优秀学生、论文奖或项目荣誉写在这里。",
+    },
+    {
+      title: "Selected recognition placeholder",
+      year: "20XX",
+      description: "也可以先保留占位,等有真实信息后再替换。",
+    },
+  ],
+
+  featured: [],
 };
