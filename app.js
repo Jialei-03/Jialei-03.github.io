@@ -112,7 +112,9 @@
     try {
       const profile = await fetchJson(PROFILE_URL);
       $("#avatar").src = profile.avatar_url || `https://github.com/${GITHUB_USERNAME}.png`;
-      $("#profile-name").textContent = profile.name || profile.login || GITHUB_USERNAME;
+      // 优先用 SITE_CONFIG 里的显示名，再走 GitHub profile，最后降级到用户名
+      const displayName = (cfg.meta && cfg.meta.name) || profile.name || profile.login || GITHUB_USERNAME;
+      $("#profile-name").textContent = displayName;
       $("#bio").textContent = profile.bio || cfg.meta.tagline || "一个安静的个人主页，用来收纳公开项目、GitHub 资料和正在发生的创造。";
       $("#public-repos").textContent = formatNumber(profile.public_repos);
       $("#followers").textContent = formatNumber(profile.followers);

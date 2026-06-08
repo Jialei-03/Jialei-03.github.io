@@ -8,7 +8,7 @@
 window.SITE_CONFIG = {
   meta: {
     // 你希望别人怎么称呼你 / 你是谁
-    name: "Jialei-03",
+    name: "lijialei",
     role: "Student · Builder",          // 例:"PhD Student @ XX" / "Software Engineer"
     location: "Shanghai, CN",                 // 留空就不显示城市
     timezone: "Asia/Shanghai",                // footer 用,显示当前时间
