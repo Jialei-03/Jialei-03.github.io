@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Jialei-03 的个人主页。展示 GitHub 资料、正在做的事和技术栈。" />
+    <meta name="theme-color" content="#f7f5ef" />
+    <meta property="og:title" content="Jialei-03 · Personal Homepage" />
+    <meta property="og:description" content="个人主页 · 展示 GitHub 资料与项目" />
+    <meta property="og:type" content="profile" />
+    <title>Jialei-03 · Personal Homepage</title>
+    <link rel="preconnect" href="https://api.github.com" crossorigin />
+    <link rel="preconnect" href="https://github.com" crossorigin />
+    <link rel="preconnect" href="https://gh-pinned-repos.egoist.dev" crossorigin />
+    <link rel="icon" href="https://github.com/Jialei-03.png?size=64" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳到主内容</a>
+
+    <header class="topbar" id="topbar" data-elevated="false">
+      <a class="brand" href="#top" aria-label="返回顶部">
+        <span class="brand-mark" aria-hidden="true">◐</span>
+        <span class="brand-name" data-bind="meta.name">Jialei-03</span>
+      </a>
+      <nav class="topnav" id="topnav" aria-label="主导航">
+        <a href="#now">Now</a>
+        <a href="#work">Work</a>
+        <a href="#stack">Stack</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div class="topbar-actions">
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="切换深色模式" title="切换深色模式">
+          <span class="theme-icon" aria-hidden="true">◑</span>
+        </button>
+        <a class="cta" id="cta-github" href="#" target="_blank" rel="noreferrer">
+          GitHub ↗
+        </a>
+        <button class="menu-toggle" id="menu-toggle" type="button" aria-label="菜单" aria-expanded="false">
+          <span class="menu-bars" aria-hidden="true"></span>
+        </button>
+      </div>
+    </header>
+
+    <main id="main">
+      <span id="top" aria-hidden="true"></span>
+
+      <section class="hero" aria-labelledby="profile-name">
+        <div class="hero-grid">
+          <div class="profile-portrait" aria-hidden="true">
+            <img id="avatar" src="https://github.com/Jialei-03.png" alt="" width="220" height="220" />
+            <span class="portrait-meta" aria-hidden="true">
+              <span data-bind="meta.location">Shanghai, CN</span>
+            </span>
+          </div>
+
+          <div class="profile-copy">
+            <p class="eyebrow">
+              <span class="eyebrow-dot" aria-hidden="true"></span>
+              <span data-bind="meta.role">Student · Builder</span>
+            </p>
+            <h1 id="profile-name">Jialei-03</h1>
+            <p id="bio" class="tagline">
+              正在从 GitHub 读取公开资料。网络临时拥挤时,这里会保持一个干净可访问的主页。
+            </p>
+
+            <div class="actions" aria-label="主要链接">
+              <a class="button primary" id="hero-github" href="#" target="_blank" rel="noreferrer">
+                <span>访问 GitHub</span>
+                <span aria-hidden="true">→</span>
+              </a>
+              <a class="button" href="#work">看仓库</a>
+              <a class="button ghost" href="#contact">联系</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="stats" aria-label="GitHub 统计">
+        <article>
+          <span id="public-repos">--</span>
+          <p>Repositories</p>
+        </article>
+        <article>
+          <span id="followers">--</span>
+          <p>Followers</p>
+        </article>
+        <article>
+          <span id="following">--</span>
+          <p>Following</p>
+        </article>
+        <article>
+          <span id="gists">--</span>
+          <p>Gists</p>
+        </article>
+      </section>
+
+      <section id="now" class="section now" aria-labelledby="now-heading">
+        <header class="section-heading">
+          <div>
+            <p class="eyebrow">Now · <span id="now-year">2026</span></p>
+            <h2 id="now-heading">现在在做什么</h2>
+          </div>
+          <p class="section-note">主页每几个月随手更一次,反映最近一两个月的状态。</p>
+        </header>
+        <div class="now-grid">
+          <article>
+            <p class="now-label">Focused on</p>
+            <p class="now-value" data-bind="now.focused">把 GitHub 上零散的项目沉淀成作品集</p>
+          </article>
+          <article>
+            <p class="now-label">Learning</p>
+            <p class="now-value" data-bind="now.learning">推荐系统 · 检索增强 · LLM 推理</p>
+          </article>
+          <article>
+            <p class="now-label">Building</p>
+            <p class="now-value" data-bind="now.building">dllmrec · minionerec · 这个主页</p>
+          </article>
+          <article>
+            <p class="now-label">Reading</p>
+            <p class="now-value" data-bind="now.reading">一本关于 XX 的小书</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="work" class="section work" aria-labelledby="work-heading">
+        <header class="section-heading">
+          <div>
+            <p class="eyebrow">Pinned · GitHub</p>
+            <h2 id="work-heading">精选仓库</h2>
+          </div>
+          <p class="section-note" id="work-status">正在加载置顶仓库...</p>
+        </header>
+        <div id="repo-grid" class="repo-grid" aria-live="polite"></div>
+      </section>
+
+      <section id="stack" class="section stack" aria-labelledby="stack-heading">
+        <header class="section-heading">
+          <div>
+            <p class="eyebrow">Stack · 技术栈</p>
+            <h2 id="stack-heading">常用的语言与工具</h2>
+          </div>
+          <p class="section-note">从公开仓库的 language 字段耦合,会跟随仓库自动更新。</p>
+        </header>
+        <div id="stack-grid" class="stack-grid" aria-live="polite">
+          <p class="status">正在计算语言占比...</p>
+        </div>
+      </section>
+
+      <section id="contact" class="section contact" aria-labelledby="contact-heading">
+        <header class="section-heading">
+          <div>
+            <p class="eyebrow">Get in touch</p>
+            <h2 id="contact-heading">来找我</h2>
+          </div>
+          <p class="section-note">最便捷的方式是折到 GitHub 发 Issue 或私信。</p>
+        </header>
+        <div class="contact-grid" id="contact-grid"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-row">
+        <span>© <span id="footer-year">2026</span> <span data-bind="meta.name">Jialei-03</span></span>
+        <span aria-hidden="true">·</span>
+        <span>Built for GitHub Pages · vanilla HTML / CSS / JS</span>
+      </div>
+      <div class="footer-row">
+        <span>
+          当前时间
+          <time id="local-time">--:--</time>
+          · <span data-bind="meta.timezone">Asia/Shanghai</span>
+        </span>
+        <span aria-hidden="true">·</span>
+        <a href="https://github.com/Jialei-03/Jialei-03.github.io" target="_blank" rel="noreferrer">Source</a>
+      </div>
+    </footer>
+
+    <script src="./data/site.js" defer></script>
+    <script src="./app.js" defer></script>
+  </body>
+</html>
