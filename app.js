@@ -32,6 +32,103 @@
 
   const $ = (sel, root) => (root || document).querySelector(sel);
   const $$ = (sel, root) => Array.from((root || document).querySelectorAll(sel));
+  let currentLang = window.localStorage.getItem("lang") === "en" ? "en" : "zh";
+
+  const i18n = {
+    zh: {
+      nav: { about: "关于", education: "教育经历", publications: "论文", contact: "联系" },
+      links: { email: "邮箱" },
+      profile: {
+        eyebrow: "推荐系统 · 大语言模型",
+        motto: "无限进步。",
+      },
+      labels: { focus: "方向", affiliation: "单位", profile: "主页", staticProfile: "静态主页", interestsInline: "研究兴趣" },
+      sections: {
+        interests: "研究兴趣",
+        news: "动态",
+        education: "教育经历",
+        publications: "论文与产出",
+        awards: "奖项",
+        skills: "技能",
+        contact: "联系",
+      },
+      empty: {
+        interests: "研究兴趣会在这里更新。",
+        news: "近期动态会在这里更新。",
+        education: "教育经历会在这里更新。",
+        publications: "论文和产出会在这里更新。",
+        awards: "奖项会在这里更新。",
+        skills: "技能会在这里更新。",
+        contact: "在 data/site.js 中填入联系方式后,这里会自动生成联系入口。",
+      },
+      contactLabels: { Email: "邮箱", GitHub: "GitHub", Twitter: "Twitter", LinkedIn: "LinkedIn", Scholar: "Google Scholar", ORCID: "ORCID", Website: "网站" },
+      footer: { updated: "更新于" },
+      pdfPending: "PDF 简历会在当前版本准备好后补充。",
+      titleSuffix: "学术主页",
+      langButton: "EN",
+      langAria: "Switch to English",
+      githubLinked: "GitHub 主页",
+      githubStatic: "静态主页",
+      paper: "论文",
+      pdf: "PDF",
+      code: "代码",
+      unavailable: "暂无公开 PDF",
+    },
+    en: {
+      nav: { about: "About", education: "Education", publications: "Publications", contact: "Contact" },
+      links: { email: "Email" },
+      profile: {
+        eyebrow: "Recommender Systems · Large Language Models",
+        motto: "Always improving.",
+      },
+      labels: { focus: "Focus", affiliation: "Affiliation", profile: "Profile", staticProfile: "Static profile", interestsInline: "Interests" },
+      sections: {
+        interests: "Research Interests",
+        news: "News",
+        education: "Education",
+        publications: "Selected Publications",
+        awards: "Awards",
+        skills: "Skills",
+        contact: "Contact",
+      },
+      empty: {
+        interests: "Research interests will be added here.",
+        news: "News will be added here.",
+        education: "Education details will be added here.",
+        publications: "Publications and writing will be added here.",
+        awards: "Awards will be added here.",
+        skills: "Skills will be added here.",
+        contact: "Add contact links in data/site.js to render them here.",
+      },
+      contactLabels: { Email: "Email", GitHub: "GitHub", Twitter: "Twitter", LinkedIn: "LinkedIn", Scholar: "Google Scholar", ORCID: "ORCID", Website: "Website" },
+      footer: { updated: "Last updated" },
+      pdfPending: "PDF Resume will be added when a current version is ready.",
+      titleSuffix: "Academic Homepage",
+      langButton: "中",
+      langAria: "切换到中文",
+      githubLinked: "GitHub profile",
+      githubStatic: "Static profile",
+      paper: "Paper",
+      pdf: "PDF",
+      code: "Code",
+      unavailable: "PDF unavailable",
+    },
+  };
+
+  function isPresent(value) {
+    return value != null && String(localize(value)).trim() !== "";
+  }
+
+  function localize(value) {
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      if ("zh" in value || "en" in value) return value[currentLang] || value.zh || value.en || "";
+    }
+    return value == null ? "" : value;
+  }
+
+  function textAt(path) {
+    return path.split(".").reduce((cur, key) => (cur == null ? cur : cur[key]), i18n[currentLang]) || "";
+  }
 
   function escapeHtml(value) {
     return String(value == null ? "" : value)
@@ -53,6 +150,19 @@
     const d = new Date(iso);
     if (Number.isNaN(d.getTime())) return "";
     return d.toLocaleDateString("zh-CN", { year: "numeric", month: "short" });
+  }
+
+  function cleanUrl(value) {
+    return String(value || "").replace(/\s+/g, "").trim();
+  }
+
+  function isPlaceholderText(value) {
+    return /placeholder|待补充|20XX|City, Country|Previous Education/i.test(String(value || ""));
+  }
+
+  function isPlaceholderEntry(item) {
+    if (!item || typeof item !== "object") return false;
+    return Object.values(item).some(isPlaceholderText);
   }
 
   async function fetchJson(url, timeoutMs) {
@@ -80,31 +190,43 @@
   }
 
   function applyBindings() {
+    document.documentElement.lang = currentLang === "zh" ? "zh-CN" : "en";
+    document.documentElement.setAttribute("data-lang", currentLang);
+
     $$('[data-bind]').forEach((el) => {
       const value = valueAtPath(el.getAttribute("data-bind"));
       if (value == null || value === "") return;
-      el.textContent = String(value);
+      el.textContent = String(localize(value));
+    });
+
+    $$("[data-i18n]").forEach((el) => {
+      el.textContent = textAt(el.getAttribute("data-i18n"));
+    });
+
+    $$("[data-optional]").forEach((el) => {
+      const value = valueAtPath(el.getAttribute("data-optional"));
+      el.hidden = !isPresent(value);
     });
 
     const displayName = profileCfg.name || metaCfg.name || `${profileCfg.chineseName || "李嘉磊"} / ${profileCfg.englishName || "Jialei Li"}`;
-    const title = `${displayName} · Academic CV`;
+    const title = `${displayName} · ${textAt("titleSuffix")}`;
     document.title = title;
-
-    const yearEl = $("#footer-year");
-    if (yearEl) yearEl.textContent = new Date().getFullYear();
-
-    [$("#hero-github"), $("#cta-github")].filter(Boolean).forEach((a) => {
-      a.href = `https://github.com/${GITHUB_USERNAME}`;
-    });
 
     $$("a[href*='.github.io']").forEach((a) => {
       a.href = `https://github.com/${GITHUB_USERNAME}/${GITHUB_USERNAME}.github.io`;
     });
+
+    const langBtn = $("#lang-toggle");
+    if (langBtn) {
+      langBtn.textContent = textAt("langButton");
+      langBtn.setAttribute("aria-label", textAt("langAria"));
+      langBtn.setAttribute("title", textAt("langAria"));
+    }
   }
 
   function renderPdfButton() {
-    const btn = $("#pdf-button");
-    if (!btn) return;
+    const status = $("#pdf-status");
+    if (!status) return;
     const pdf = profileCfg.pdf || {};
     if (pdf.status === "available" && pdf.href) {
       const link = document.createElement("a");
@@ -112,12 +234,10 @@
       link.href = pdf.href;
       link.textContent = pdf.label || "PDF Resume";
       link.setAttribute("download", "");
-      btn.replaceWith(link);
+      status.replaceWith(link);
       return;
     }
-    btn.textContent = `${pdf.label || "PDF Resume"} · Coming soon`;
-    btn.setAttribute("aria-disabled", "true");
-    btn.disabled = true;
+    status.textContent = textAt("pdfPending");
   }
 
   function renderList(containerId, items, emptyText, renderItem) {
@@ -130,58 +250,110 @@
     container.innerHTML = items.map(renderItem).join("");
   }
 
+  function renderNews() {
+    renderList(
+      "news-list",
+      cfg.news,
+      textAt("empty.news"),
+      (item) => `
+        <li>
+          ${item.image ? `<img class="news-thumb" src="${escapeHtml(item.image)}" alt="" />` : ""}
+          <time class="date-tag">${escapeHtml(item.date || "")}</time>
+          <span>
+            ${item.badge ? `<strong>${escapeHtml(item.badge)}</strong> · ` : ""}
+            ${item.link ? `<a href="${escapeHtml(item.link)}" target="_blank" rel="noreferrer">${escapeHtml(localize(item.text))}</a>` : escapeHtml(localize(item.text))}
+          </span>
+        </li>
+      `
+    );
+  }
+
+  const iconMap = {
+    email: '<span class="link-icon icon-email" aria-hidden="true"></span>',
+    github: '<span class="link-icon icon-github" aria-hidden="true"></span>',
+    paper: '<span class="link-icon icon-paper" aria-hidden="true"></span>',
+    pdf: '<span class="link-icon icon-pdf" aria-hidden="true"></span>',
+    code: '<span class="link-icon icon-code" aria-hidden="true"></span>',
+  };
+
+  function iconForLink(label, href) {
+    const value = `${label || ""} ${href || ""}`.toLowerCase();
+    if (value.includes("pdf")) return iconMap.pdf;
+    if (value.includes("github") || value.includes("code")) return iconMap.github;
+    if (value.includes("paper") || value.includes("论文") || value.includes("doi.org") || value.includes("dl.acm.org")) return iconMap.paper;
+    if (value.includes("arxiv")) return iconMap.paper;
+    if (value.includes("mailto") || value.includes("email") || value.includes("邮箱")) return iconMap.email;
+    return iconMap.code;
+  }
+
+  function linkButton(label, href, extraClass) {
+    if (!href) return "";
+    return `<a class="btn ${extraClass || ""}" href="${escapeHtml(href)}" target="_blank" rel="noreferrer">${iconForLink(label, href)}<span>${escapeHtml(label)}</span></a>`;
+  }
+
   function renderCvSections() {
+    const educationItems = (cfg.education || []).filter((item) => !isPlaceholderEntry(item));
+    const publicationItems = (cfg.publications || []).filter((item) => !isPlaceholderEntry(item));
+    const awardItems = (cfg.awards || []).filter((item) => !isPlaceholderEntry(item));
+    const inlineInterest = $("#interest-inline");
+    if (inlineInterest) {
+      inlineInterest.innerHTML = (cfg.interests || [])
+        .map(localize)
+        .filter(Boolean)
+        .map((item) => `<span class="item">${escapeHtml(item)}</span>`)
+        .join(" ");
+    }
+
     renderList(
       "interest-list",
       cfg.interests,
-      "Research interests will be added here.",
-      (item) => `<article class="interest-card">${escapeHtml(item)}</article>`
+      textAt("empty.interests"),
+      (item) => `<article class="interest-card">${escapeHtml(localize(item))}</article>`
     );
+
+    renderNews();
 
     renderList(
       "education-list",
-      cfg.education,
-      "Education entries will be added here.",
+      educationItems,
+      textAt("empty.education"),
       (item) => `
-        <article class="timeline-item">
-          <div class="timeline-meta">${escapeHtml(item.period || "")}</div>
-          <div>
-            <h4>${escapeHtml(item.school)}</h4>
-            <p class="timeline-degree">${escapeHtml(item.degree || "")}</p>
-            <p class="timeline-location">${escapeHtml(item.location || "")}</p>
-            <p>${escapeHtml(item.details || "")}</p>
+        <article class="experience-item">
+          <div class="logo-box">
+            ${item.logo ? `<img src="${escapeHtml(item.logo)}" alt="${escapeHtml(item.logoAlt || localize(item.school))}" />` : `<span class="logo-text">${escapeHtml(String(localize(item.school)).slice(0, 4))}</span>`}
           </div>
-        </article>
-      `
-    );
-
-    renderList(
-      "project-list",
-      cfg.projects,
-      "Research projects will be added here.",
-      (item) => `
-        <article class="project-entry">
-          <div class="entry-main">
-            <p class="entry-kicker">${escapeHtml(item.role || "Project")}${item.period ? ` · ${escapeHtml(item.period)}` : ""}</p>
-            <h3>${item.link ? `<a href="${escapeHtml(item.link)}" target="_blank" rel="noreferrer">${escapeHtml(item.title)} ↗</a>` : escapeHtml(item.title)}</h3>
-            <p>${escapeHtml(item.summary || "")}</p>
+          <div class="exp-details">
+            <h4 class="exp-title">${escapeHtml(localize(item.school))}</h4>
+            <p class="timeline-degree">${escapeHtml(localize(item.degree))}</p>
+            ${isPresent(item.location) ? `<p class="timeline-location">${escapeHtml(localize(item.location))}</p>` : ""}
+            ${isPresent(item.details) ? `<p>${escapeHtml(localize(item.details))}</p>` : ""}
           </div>
-          <div class="tag-row">${(item.tags || []).map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}</div>
+          <div class="exp-date">${escapeHtml(item.period || "")}</div>
         </article>
       `
     );
 
     renderList(
       "publication-list",
-      cfg.publications,
-      "Publications and writing will be added here.",
+      publicationItems,
+      textAt("empty.publications"),
       (item) => `
-        <article class="publication-item">
-          <div class="publication-year">${escapeHtml(item.year || "")}</div>
-          <div>
-            <h3>${item.link ? `<a href="${escapeHtml(item.link)}" target="_blank" rel="noreferrer">${escapeHtml(item.title)} ↗</a>` : escapeHtml(item.title)}</h3>
-            <p class="authors">${escapeHtml(item.authors || "")}</p>
-            <p class="venue">${escapeHtml(item.venue || "")}${item.status ? ` · ${escapeHtml(item.status)}` : ""}</p>
+        <article class="paper-item${item.image ? "" : " paper-item--text"}">
+          ${item.image ? `
+          <div class="paper-img-container">
+            <img class="paper-img" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.imageAlt || item.title)}" />
+          </div>
+          ` : ""}
+          <div class="paper-info">
+            ${item.badge ? `<span class="conf-badge badge-default">${escapeHtml(item.badge)}</span>` : ""}
+            ${item.link ? `<a class="paper-title" href="${escapeHtml(item.link)}" target="_blank" rel="noreferrer">${escapeHtml(item.title)}</a>` : `<h3 class="paper-title">${escapeHtml(item.title)}</h3>`}
+            <div class="author-list">${escapeHtml(item.authors || "")}</div>
+            <div class="venue">${escapeHtml(item.venue || "")}${item.year ? ` · ${escapeHtml(item.year)}` : ""}${item.status ? ` · ${escapeHtml(localize(item.status))}` : ""}</div>
+            <div class="btn-group">
+              ${linkButton(textAt("paper"), item.link)}
+              ${item.pdf ? linkButton(textAt("pdf"), item.pdf) : `<span class="btn btn-disabled">${escapeHtml(textAt("unavailable"))}</span>`}
+              ${linkButton(textAt("code"), item.code)}
+            </div>
           </div>
         </article>
       `
@@ -190,25 +362,25 @@
     renderList(
       "skill-list",
       cfg.skills,
-      "Skills will be added here.",
+      textAt("empty.skills"),
       (group) => `
         <article class="skill-group">
           <h3>${escapeHtml(group.group)}</h3>
-          <div class="skill-chip-row">${(group.items || []).map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div>
+          <div class="skill-chip-row">${(group.items || []).map((item) => `<span>${escapeHtml(localize(item))}</span>`).join("")}</div>
         </article>
       `
     );
 
     renderList(
       "award-list",
-      cfg.awards,
-      "Awards and honors will be added here.",
+      awardItems,
+      textAt("empty.awards"),
       (item) => `
         <article class="award-item">
-          <span>${escapeHtml(item.year || "")}</span>
+          <span>${escapeHtml(localize(item.year))}</span>
           <div>
             <h3>${escapeHtml(item.title)}</h3>
-            <p>${escapeHtml(item.description || "")}</p>
+            <p>${escapeHtml(localize(item.description))}</p>
           </div>
         </article>
       `
@@ -218,13 +390,15 @@
   async function loadProfile() {
     const displayName = profileCfg.name || metaCfg.name || `${profileCfg.chineseName || "李嘉磊"} / ${profileCfg.englishName || "Jialei Li"}`;
     const profileStatus = $("#profile-status");
+    const snapshot = $("#github-snapshot");
     try {
       const profile = await fetchJson(PROFILE_URL);
       const avatar = $("#avatar");
-      if (avatar) avatar.src = profile.avatar_url || `https://github.com/${GITHUB_USERNAME}.png`;
+      if (avatar && profileCfg.avatarUrl) avatar.src = profileCfg.avatarUrl;
       const h1 = $("#profile-name");
       if (h1) h1.textContent = displayName;
-      if (profileStatus) profileStatus.textContent = profile.bio ? "GitHub profile linked" : "GitHub public profile";
+      if (profileStatus) profileStatus.textContent = profile.bio ? textAt("githubLinked") : textAt("githubStatic");
+      if (snapshot) snapshot.setAttribute("data-status", "ready");
       $("#public-repos").textContent = formatNumber(profile.public_repos);
       $("#followers").textContent = formatNumber(profile.followers);
       $("#following").textContent = formatNumber(profile.following);
@@ -233,11 +407,16 @@
       console.info("GitHub profile unavailable.", err);
       const h1 = $("#profile-name");
       if (h1) h1.textContent = displayName;
-      if (profileStatus) profileStatus.textContent = "GitHub temporarily unavailable";
-      ["#public-repos", "#followers", "#following", "#gists"].forEach((sel) => {
-        const el = $(sel);
-        if (el) el.textContent = "--";
-      });
+      if (profileStatus) profileStatus.textContent = textAt("githubStatic");
+      if (snapshot) {
+        snapshot.setAttribute("data-status", "unavailable");
+        snapshot.innerHTML = `
+          <article class="snapshot-unavailable">
+            <span>GitHub data unavailable</span>
+            <p>Static CV content remains available below.</p>
+          </article>
+        `;
+      }
     }
   }
 
@@ -245,7 +424,7 @@
     return {
       name: repo.repo,
       description: repo.description,
-      htmlUrl: repo.link,
+      htmlUrl: cleanUrl(repo.link),
       language: repo.language,
       stars: repo.stars,
       forks: repo.forks,
@@ -257,7 +436,7 @@
     return {
       name: repo.name,
       description: repo.description,
-      htmlUrl: repo.html_url,
+      htmlUrl: cleanUrl(repo.html_url),
       language: repo.language,
       stars: repo.stargazers_count,
       forks: repo.forks_count,
@@ -313,6 +492,7 @@
   }
 
   async function loadRepositories() {
+    if (!$("#repo-grid") || !$("#work-status")) return;
     if (Array.isArray(cfg.featured) && cfg.featured.length) {
       try {
         const all = await fetchJson(REPOS_URL);
@@ -391,6 +571,7 @@
   }
 
   async function loadStack() {
+    if (!$("#stack-grid")) return;
     try {
       const repos = await fetchJson(REPOS_URL);
       renderStack(repos);
@@ -417,23 +598,28 @@
         value: contactCfg.linkedin,
         href: contactCfg.linkedin.startsWith("http") ? contactCfg.linkedin : `https://linkedin.com/in/${contactCfg.linkedin}`,
       },
+      contactCfg.scholar && {
+        label: "Scholar",
+        value: "Google Scholar",
+        href: contactCfg.scholar,
+      },
+      contactCfg.orcid && {
+        label: "ORCID",
+        value: contactCfg.orcid.replace(/^https?:\/\/orcid\.org\//, ""),
+        href: contactCfg.orcid.startsWith("http") ? contactCfg.orcid : `https://orcid.org/${contactCfg.orcid}`,
+      },
       contactCfg.website && { label: "Website", value: contactCfg.website.replace(/^https?:\/\//, ""), href: contactCfg.website },
     ].filter(Boolean);
 
-    if (email) {
-      const heroEmail = $("#hero-email");
-      if (heroEmail) heroEmail.href = `mailto:${email}`;
-    }
-
     if (!items.length) {
-      grid.innerHTML = `<p class="contact-empty">在 <code>data/site.js</code> 中填入 email / website 等信息后,这里会自动生成联系入口。</p>`;
+      grid.innerHTML = `<p class="contact-empty">${escapeHtml(textAt("empty.contact"))}</p>`;
       return;
     }
 
     grid.innerHTML = items
       .map((it) => `
         <a class="contact-card" href="${escapeHtml(it.href)}" target="_blank" rel="noreferrer">
-          <span class="contact-label">${escapeHtml(it.label)}</span>
+          <span class="contact-label">${escapeHtml(textAt(`contactLabels.${it.label}`) || it.label)}</span>
           <span class="contact-value">${escapeHtml(it.value)}</span>
           <span class="contact-arrow">↗</span>
         </a>
@@ -441,49 +627,82 @@
       .join("");
   }
 
-  function setupTheme() {
-    const root = document.documentElement;
-    const stored = window.localStorage.getItem("theme");
-    const initial = stored || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-    root.setAttribute("data-theme", initial);
-    const btn = $("#theme-toggle");
-    if (!btn) return;
-    btn.addEventListener("click", () => {
-      const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
-      root.setAttribute("data-theme", next);
-      window.localStorage.setItem("theme", next);
-    });
+  function setupAvatarFallback() {
+    const avatar = $("#avatar");
+    const fallback = $("#avatar-fallback");
+    if (!avatar || !fallback) return;
+    const displayName = profileCfg.avatarFallback || profileCfg.englishName || metaCfg.name || GITHUB_USERNAME;
+    fallback.textContent = displayName;
+    const showFallback = () => {
+      avatar.hidden = true;
+      fallback.hidden = false;
+      fallback.classList.remove("is-hidden");
+    };
+    const showAvatar = () => {
+      if (avatar.naturalWidth === 0) return;
+      avatar.hidden = false;
+      fallback.hidden = true;
+      fallback.classList.add("is-hidden");
+    };
+    avatar.hidden = true;
+    fallback.hidden = false;
+    avatar.addEventListener("load", showAvatar);
+    avatar.addEventListener("error", showFallback);
+    if (avatar.complete && avatar.naturalWidth > 0) showAvatar();
+    if (avatar.complete && avatar.naturalWidth === 0) showFallback();
   }
 
-  function setupMenu() {
-    const btn = $("#menu-toggle");
-    const nav = $("#topnav");
-    if (!btn || !nav) return;
+  function renderPageContent() {
+    applyBindings();
+    renderPdfButton();
+    renderCvSections();
+    renderContact();
+    const profileStatus = $("#profile-status");
+    if (profileStatus) profileStatus.textContent = textAt("githubStatic");
+  }
+
+  function setupLanguage() {
+    const btn = $("#lang-toggle");
+    if (!btn) return;
     btn.addEventListener("click", () => {
-      const open = btn.getAttribute("aria-expanded") === "true";
-      btn.setAttribute("aria-expanded", String(!open));
-      nav.setAttribute("data-open", String(!open));
-    });
-    $$("a", nav).forEach((a) => {
-      a.addEventListener("click", () => {
-        btn.setAttribute("aria-expanded", "false");
-        nav.setAttribute("data-open", "false");
-      });
+      currentLang = currentLang === "zh" ? "en" : "zh";
+      window.localStorage.setItem("lang", currentLang);
+      renderPageContent();
     });
   }
 
   function setupTopbarElevation() {
     const bar = $("#topbar");
     if (!bar) return;
-    const onScroll = () => bar.setAttribute("data-elevated", String(window.scrollY > 4));
+    const progress = document.createElement("div");
+    progress.className = "scroll-progress";
+    document.body.appendChild(progress);
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const pct = docHeight > 0 ? (window.scrollY / docHeight) * 100 : 0;
+        progress.style.width = `${pct}%`;
+        bar.classList.toggle("is-scrolled", window.scrollY > 8);
+        bar.setAttribute("data-elevated", String(window.scrollY > 8));
+        ticking = false;
+      });
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
   }
 
   function setupReveal() {
-    const targets = $$(".section, .hero, .cv-snapshot");
-    targets.forEach((el) => el.classList.add("reveal"));
-    window.setTimeout(() => targets.forEach((el) => el.classList.add("in")), 1500);
+    const targets = $$("section:not(.hero), .section-sep, .news-list li, .experience-item, .paper-item");
+    targets.forEach((el, index) => {
+      el.classList.add("reveal");
+      if (el.matches(".news-list li, .experience-item, .paper-item")) {
+        el.style.setProperty("--reveal-delay", `${Math.min(index % 6, 5) * 0.07}s`);
+      }
+    });
+    window.setTimeout(() => targets.forEach((el) => el.classList.add("in")), 600);
     if (!("IntersectionObserver" in window)) {
       targets.forEach((el) => el.classList.add("in"));
       return;
@@ -495,8 +714,41 @@
           io.unobserve(e.target);
         }
       });
-    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.04 });
+    }, { rootMargin: "0px 0px -48px 0px", threshold: 0.12 });
     targets.forEach((el) => io.observe(el));
+  }
+
+  function setupPortraitParallax() {
+    const portrait = $(".hero .portrait");
+    if (!portrait || !window.matchMedia("(pointer: fine)").matches) return;
+    const img = $("img", portrait);
+    if (!img) return;
+    let raf = 0;
+    let targetX = 0;
+    let targetY = 0;
+    let currentX = 0;
+    let currentY = 0;
+    const tick = () => {
+      currentX += (targetX - currentX) * 0.1;
+      currentY += (targetY - currentY) * 0.1;
+      img.style.transform = `translate(${currentX * 4}px, ${currentY * 4}px)`;
+      if (Math.abs(targetX - currentX) > 0.01 || Math.abs(targetY - currentY) > 0.01) {
+        raf = window.requestAnimationFrame(tick);
+      } else {
+        raf = 0;
+      }
+    };
+    portrait.addEventListener("mousemove", (e) => {
+      const rect = portrait.getBoundingClientRect();
+      targetX = (e.clientX - rect.left) / rect.width - 0.5;
+      targetY = (e.clientY - rect.top) / rect.height - 0.5;
+      if (!raf) raf = window.requestAnimationFrame(tick);
+    });
+    portrait.addEventListener("mouseleave", () => {
+      targetX = 0;
+      targetY = 0;
+      if (!raf) raf = window.requestAnimationFrame(tick);
+    });
   }
 
   function setupLocalTime() {
@@ -520,14 +772,12 @@
   }
 
   function init() {
-    applyBindings();
-    renderPdfButton();
-    renderCvSections();
-    renderContact();
-    setupTheme();
-    setupMenu();
+    renderPageContent();
+    setupAvatarFallback();
+    setupLanguage();
     setupTopbarElevation();
     setupReveal();
+    setupPortraitParallax();
     setupLocalTime();
     loadProfile();
     loadRepositories();

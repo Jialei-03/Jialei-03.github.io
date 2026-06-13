@@ -2,231 +2,116 @@
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="description" content="李嘉磊 / Jialei Li 的学术 CV 与个人名片。" />
-    <meta name="theme-color" content="#f7f5ef" />
-    <meta property="og:title" content="李嘉磊 / Jialei Li · Academic CV" />
-    <meta property="og:description" content="Academic CV, research interests, projects, publications, and contact links." />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="李嘉磊 / Jialei Li 的学术主页。" />
+    <meta name="theme-color" content="#fbfaf6" />
+    <meta property="og:title" content="李嘉磊 / Jialei Li" />
+    <meta property="og:description" content="Research interests, publications, projects, and education." />
     <meta property="og:type" content="profile" />
-    <title>李嘉磊 / Jialei Li · Academic CV</title>
-    <link rel="preconnect" href="https://api.github.com" crossorigin />
-    <link rel="preconnect" href="https://github.com" crossorigin />
-    <link rel="preconnect" href="https://gh-pinned-repos.egoist.dev" crossorigin />
-    <link rel="icon" href="https://github.com/Jialei-03.png?size=64" />
-    <link rel="stylesheet" href="./styles.css" />
+    <title>李嘉磊 / Jialei Li</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,400..700,30..100,0..1;1,9..144,400..600,30..100,0..1&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,500&family=Inter:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;700&display=swap" rel="stylesheet" />
+    <link rel="icon" href="./assets/favicon.svg?v=20260613-favicon" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css?v=20260613-avatar-photo" />
   </head>
   <body>
     <a class="skip-link" href="#main">跳到主内容</a>
 
-    <header class="topbar" id="topbar" data-elevated="false">
-      <a class="brand" href="#top" aria-label="返回顶部">
-        <span class="brand-mark" aria-hidden="true">◐</span>
-        <span class="brand-name" data-bind="meta.brand">lijialei</span>
-      </a>
-      <nav class="topnav" id="topnav" aria-label="主导航">
-        <a href="#about">About</a>
-        <a href="#research">Research</a>
-        <a href="#projects">Projects</a>
-        <a href="#publications">Publications</a>
-        <a href="#skills">Skills</a>
-        <a href="#contact">Contact</a>
-      </nav>
-      <div class="topbar-actions">
-        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="切换深色模式" title="切换深色模式">
-          <span class="theme-icon" aria-hidden="true">◑</span>
-        </button>
-        <a class="cta" id="cta-github" href="#" target="_blank" rel="noreferrer">GitHub ↗</a>
-        <button class="menu-toggle" id="menu-toggle" type="button" aria-label="菜单" aria-expanded="false">
-          <span class="menu-bars" aria-hidden="true"></span>
-        </button>
+    <nav class="site-nav" id="topbar" aria-label="Primary">
+      <div class="nav-wrapper">
+        <a href="#about" class="nav-brand" aria-label="返回顶部">
+          <span class="dot" aria-hidden="true"></span>
+          <span data-bind="meta.brand">Jialei Li</span>
+        </a>
+        <div class="nav-links" id="topnav">
+          <a href="#about" class="active" data-i18n="nav.about">关于</a>
+          <a href="#education" data-i18n="nav.education">教育经历</a>
+          <a href="#publications" data-i18n="nav.publications">论文</a>
+        </div>
+        <div class="nav-actions">
+          <button class="lang-toggle" id="lang-toggle" type="button" aria-label="Switch to English" title="Switch language">EN</button>
+        </div>
       </div>
-    </header>
+    </nav>
 
     <main id="main">
-      <span id="top" aria-hidden="true"></span>
+      <div class="wrap">
+        <section class="hero" id="about" aria-labelledby="profile-name">
+          <div class="bio">
+            <div class="hero-eyebrow" data-i18n="profile.eyebrow">推荐系统 · 大语言模型</div>
+            <h1 class="name-title" id="profile-name">
+              <span data-bind="profile.englishName">Jialei Li</span>
+              <span class="chinese-name" data-bind="profile.chineseName">李嘉磊</span>
+            </h1>
 
-      <section class="hero cv-hero" aria-labelledby="profile-name">
-        <div class="cv-hero-grid">
-          <aside class="cv-card cv-identity" aria-label="Profile summary">
-            <div class="profile-portrait" aria-hidden="true">
-              <img id="avatar" src="https://github.com/Jialei-03.png" alt="" width="220" height="220" />
-              <span class="portrait-meta" aria-hidden="true"><span data-bind="meta.location">Shanghai, CN</span></span>
+            <blockquote class="motto" data-i18n="profile.motto">
+              无限进步。
+            </blockquote>
+
+            <p class="lede" id="bio" data-bind="profile.summary">
+              我目前关注推荐系统与大语言模型相关方向,主要学习生成式推荐。
+            </p>
+
+            <div class="interests">
+              <span class="label" data-i18n="labels.interestsInline">研究兴趣</span>
+              <span id="interest-inline"></span>
             </div>
-            <dl class="identity-meta">
-              <div>
-                <dt>Location</dt>
-                <dd data-bind="profile.location">Shanghai, CN</dd>
-              </div>
-              <div>
-                <dt>Focus</dt>
-                <dd>RecSys · RAG · LLM</dd>
-              </div>
-              <div>
-                <dt>Profile</dt>
-                <dd id="profile-status">GitHub public profile</dd>
-              </div>
-            </dl>
-          </aside>
 
-          <div class="profile-copy cv-copy">
-            <p class="eyebrow">
-              <span class="eyebrow-dot" aria-hidden="true"></span>
-              <span data-bind="profile.title">Student · Research Builder</span>
-            </p>
-            <h1 id="profile-name">李嘉磊 / Jialei Li</h1>
-            <p id="bio" class="tagline" data-bind="profile.summary">
-              我目前关注推荐系统、信息检索与大语言模型相关方向,尤其是如何把模型能力落到可验证、可复现、可维护的研究与工程系统中。
-            </p>
-            <p class="tagline secondary" data-bind="profile.summaryEn">
-              I am interested in recommender systems, retrieval-augmented methods, and LLM reasoning.
-            </p>
-            <div class="actions" aria-label="CV actions">
-              <a class="button primary" id="hero-github" href="#" target="_blank" rel="noreferrer">
-                <span>GitHub</span><span aria-hidden="true">→</span>
+            <div class="social-icons" aria-label="Profile links">
+              <a href="mailto:320220941691@lzu.edu.cn" title="Email" aria-label="Email">
+                <span class="link-icon icon-email" aria-hidden="true"></span>
+                <span>Email</span>
               </a>
-              <a class="button" id="hero-email" href="#contact">Email</a>
-              <button class="button ghost is-disabled" id="pdf-button" type="button" aria-disabled="true">PDF Resume · Coming soon</button>
+              <a href="https://github.com/Jialei-03" target="_blank" rel="noreferrer" title="GitHub" aria-label="GitHub">
+                <span class="link-icon icon-github" aria-hidden="true"></span>
+                <span>GitHub</span>
+              </a>
             </div>
           </div>
-        </div>
-      </section>
 
-      <section class="cv-snapshot" aria-label="Academic profile snapshot">
-        <article>
-          <span id="public-repos">--</span>
-          <p>Public Repos</p>
-        </article>
-        <article>
-          <span id="followers">--</span>
-          <p>Followers</p>
-        </article>
-        <article>
-          <span id="following">--</span>
-          <p>Following</p>
-        </article>
-        <article>
-          <span id="gists">--</span>
-          <p>Gists</p>
-        </article>
-      </section>
+          <figure class="portrait">
+            <span class="avatar-fallback" id="avatar-fallback" data-bind="profile.avatarFallback">Jialei Li</span>
+            <img id="avatar" src="./assets/avatar.jpg?v=20260613-avatar-photo" alt="Jialei Li profile portrait" width="280" height="280" />
+          </figure>
+        </section>
 
-      <section id="about" class="section cv-section" aria-labelledby="about-heading">
-        <header class="section-heading">
-          <div>
-            <p class="eyebrow">About · 简介</p>
-            <h2 id="about-heading">Academic profile</h2>
-          </div>
-          <p class="section-note">A concise CV-style overview for readers who want the map before the details.</p>
-        </header>
-        <div class="about-panel">
-          <p data-bind="profile.summary">我目前关注推荐系统、信息检索与大语言模型相关方向。</p>
-          <p data-bind="profile.summaryEn">I am interested in recommender systems, retrieval-augmented methods, and LLM reasoning.</p>
-        </div>
-      </section>
+        <hr class="section-sep" aria-hidden="true" />
 
-      <section id="research" class="section cv-section" aria-labelledby="research-heading">
-        <header class="section-heading">
-          <div>
-            <p class="eyebrow">Research · 研究方向</p>
-            <h2 id="research-heading">Interests & Education</h2>
-          </div>
-          <p class="section-note">Research interests, education, and the current academic direction.</p>
-        </header>
-        <div class="cv-two-column">
-          <div>
-            <h3 class="subsection-title">Research Interests</h3>
-            <div id="interest-list" class="interest-grid"></div>
-          </div>
-          <div>
-            <h3 class="subsection-title">Education</h3>
-            <div id="education-list" class="timeline"></div>
-          </div>
-        </div>
-      </section>
+        <section id="news" aria-labelledby="news-heading">
+          <header class="section-title">
+            <span class="num">I.</span>
+            <h2 id="news-heading" data-i18n="sections.news">动态</h2>
+            <span class="rule" aria-hidden="true"></span>
+          </header>
+          <ul class="news-list" id="news-list"></ul>
+        </section>
 
-      <section id="projects" class="section cv-section" aria-labelledby="projects-heading">
-        <header class="section-heading">
-          <div>
-            <p class="eyebrow">Projects · 研究/工程项目</p>
-            <h2 id="projects-heading">Research / Projects</h2>
-          </div>
-          <p class="section-note">Static CV entries first; selected GitHub code is kept as supporting evidence.</p>
-        </header>
-        <div id="project-list" class="project-list"></div>
-        <div class="code-block-heading">
-          <h3 class="subsection-title">Selected Code</h3>
-          <p class="section-note" id="work-status">正在加载 GitHub 置顶仓库...</p>
-        </div>
-        <div id="repo-grid" class="repo-grid compact" aria-live="polite"></div>
-      </section>
+        <section id="education" aria-labelledby="education-heading">
+          <header class="section-title">
+            <span class="num">II.</span>
+            <h2 id="education-heading" data-i18n="sections.education">教育经历</h2>
+            <span class="rule" aria-hidden="true"></span>
+          </header>
+          <div id="education-list"></div>
+        </section>
 
-      <section id="publications" class="section cv-section" aria-labelledby="publications-heading">
-        <header class="section-heading">
-          <div>
-            <p class="eyebrow">Publications · 论文/产出</p>
-            <h2 id="publications-heading">Publications & Writing</h2>
-          </div>
-          <p class="section-note">Papers, preprints, technical reports, or project notes can live here.</p>
-        </header>
-        <div id="publication-list" class="publication-list"></div>
-      </section>
-
-      <section id="skills" class="section cv-section" aria-labelledby="skills-heading">
-        <header class="section-heading">
-          <div>
-            <p class="eyebrow">Skills · 技能</p>
-            <h2 id="skills-heading">Skills & Technical Stack</h2>
-          </div>
-          <p class="section-note">CV skill groups plus lightweight GitHub language statistics.</p>
-        </header>
-        <div class="cv-two-column skills-layout">
-          <div id="skill-list" class="skill-groups"></div>
-          <div>
-            <h3 class="subsection-title">GitHub Language Signals</h3>
-            <div id="stack-grid" class="stack-grid" aria-live="polite">
-              <p class="status">正在计算语言占比...</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="awards" class="section cv-section" aria-labelledby="awards-heading">
-        <header class="section-heading">
-          <div>
-            <p class="eyebrow">Honors · 荣誉</p>
-            <h2 id="awards-heading">Awards & Honors</h2>
-          </div>
-          <p class="section-note">Scholarships, competitions, awards, and selected recognition.</p>
-        </header>
-        <div id="award-list" class="award-list"></div>
-      </section>
-
-      <section id="contact" class="section cv-section contact" aria-labelledby="contact-heading">
-        <header class="section-heading">
-          <div>
-            <p class="eyebrow">Contact · 联系</p>
-            <h2 id="contact-heading">Contact</h2>
-          </div>
-          <p class="section-note">For collaboration, research discussion, or project follow-up.</p>
-        </header>
-        <div class="contact-grid" id="contact-grid"></div>
-      </section>
+        <section id="publications" aria-labelledby="publications-heading">
+          <header class="section-title">
+            <span class="num">III.</span>
+            <h2 id="publications-heading" data-i18n="sections.publications">论文与产出</h2>
+            <span class="rule" aria-hidden="true"></span>
+          </header>
+          <div id="publication-list"></div>
+        </section>
+      </div>
     </main>
 
-    <footer class="footer">
-      <div class="footer-row">
-        <span>© <span id="footer-year">2026</span> <span data-bind="profile.chineseName">李嘉磊</span> / <span data-bind="profile.englishName">Jialei Li</span></span>
-        <span aria-hidden="true">·</span>
-        <span><span data-bind="meta.brand">lijialei</span> · Academic CV</span>
-      </div>
-      <div class="footer-row">
-        <span>当前时间 <time id="local-time">--:--</time> · <span data-bind="meta.timezone">Asia/Shanghai</span></span>
-        <span aria-hidden="true">·</span>
-        <a href="https://github.com/Jialei-03/Jialei-03.github.io" target="_blank" rel="noreferrer">Source</a>
-      </div>
+    <footer class="site-footer">
+      <span><span data-i18n="footer.updated">更新于</span> <span data-bind="meta.updatedAt">2026-06</span></span>
     </footer>
 
-    <script src="./data/site.js" defer></script>
-    <script src="./app.js" defer></script>
+    <script src="./data/site.js?v=20260613-no-experiment-design" defer></script>
+    <script src="./app.js?v=20260613-no-experiment-design" defer></script>
   </body>
 </html>
