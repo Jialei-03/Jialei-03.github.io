@@ -25,7 +25,7 @@ window.SITE_CONFIG = {
     affiliation: "",
     availability: "",
     avatarFallback: "Jialei Li",
-    email: "320220941691@lzu.edu.cn",
+    email: "lijialei.cn@gmail.com",
     summary: {
       zh: "我目前关注推荐系统与大语言模型相关方向,主要学习生成式推荐。",
       en: "I am interested in recommender systems and large language models, with a current focus on generative recommendation.",
@@ -38,7 +38,7 @@ window.SITE_CONFIG = {
   },
 
   contact: {
-    email: "320220941691@lzu.edu.cn",
+    email: "lijialei.cn@gmail.com",
     github: "Jialei-03",
     twitter: "",
     linkedin: "",
