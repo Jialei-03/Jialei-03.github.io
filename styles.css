@@ -387,7 +387,7 @@ a:hover .link-icon,
 .portrait img {
   aspect-ratio: 1;
   object-fit: cover;
-  object-position: 52% 58%;
+  object-position: 50% 75%;
   filter: saturate(1.02);
   transition: transform 0.4s var(--ease-out);
 }
