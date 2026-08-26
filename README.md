@@ -25,6 +25,16 @@ python3 -m http.server 8765
 
 PDF 简历按钮目前是 `Coming soon`;如果将来要启用,把 PDF 放到 `assets/lijialei-resume.pdf`,并在 `data/site.js` 中把 `profile.pdf.status` 改成 `available`。
 
+## 自动验证
+
+主页的中英文个人资料、教育经历和头像尺寸由浏览器测试覆盖。首次运行先安装依赖和 Chromium：
+
+```bash
+pnpm install
+pnpm exec playwright install chromium
+pnpm test
+```
+
 ## 部署
 
 仓库: https://github.com/Jialei-03/Jialei-03.github.io

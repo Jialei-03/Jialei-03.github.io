@@ -1,0 +1,11 @@
+{
+  "name": "jialei-academic-homepage",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/*.test.cjs"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  },
+  "packageManager": "pnpm@11.19.0"
+}

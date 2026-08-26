@@ -10,10 +10,10 @@ window.SITE_CONFIG = {
     location: "",
     timezone: "Asia/Shanghai",
     tagline: {
-      zh: "关注推荐系统与大语言模型,持续学习模型方法。",
-      en: "Interested in recommender systems, large language models, and model methods.",
+      zh: "研究智能体、大语言模型与推荐系统。",
+      en: "Researching AI agents, large language models, and recommender systems.",
     },
-    updatedAt: "2026-06",
+    updatedAt: "2026-08",
   },
 
   profile: {
@@ -27,8 +27,8 @@ window.SITE_CONFIG = {
     avatarFallback: "Jialei Li",
     email: "lijialei.cn@gmail.com",
     summary: {
-      zh: "我目前关注推荐系统与大语言模型相关方向,主要学习生成式推荐。",
-      en: "I am interested in recommender systems and large language models, with a current focus on generative recommendation.",
+      zh: "我目前是中国科学技术大学人工智能与数据科学学院大数据技术与工程专业硕士生，研究方向包括智能体、大语言模型与推荐系统。",
+      en: "I am a master's student in Big Data Technology and Engineering at the School of Artificial Intelligence and Data Science, University of Science and Technology of China. My research interests include AI agents, large language models, and recommender systems.",
     },
     pdf: {
       status: "coming-soon",
@@ -48,9 +48,9 @@ window.SITE_CONFIG = {
   },
 
   interests: [
-    { zh: "推荐系统", en: "Recommender Systems" },
-    { zh: "生成式推荐", en: "Generative Recommendation" },
+    { zh: "智能体", en: "AI Agents" },
     { zh: "大语言模型", en: "Large Language Models" },
+    { zh: "推荐系统", en: "Recommender Systems" },
   ],
 
   news: [
@@ -82,8 +82,8 @@ window.SITE_CONFIG = {
         en: "University of Science and Technology of China",
       },
       degree: {
-        zh: "人工智能与数据科学学院, LDS 实验室",
-        en: "School of Artificial Intelligence and Data Science, LDS Lab",
+        zh: "大数据技术与工程，硕士研究生",
+        en: "Master's Student in Big Data Technology and Engineering",
       },
       period: "2026 -",
       location: {
@@ -162,10 +162,9 @@ window.SITE_CONFIG = {
     {
       group: "Research",
       items: [
-        { zh: "推荐系统", en: "Recommender Systems" },
+        { zh: "智能体", en: "AI Agents" },
         { zh: "大语言模型", en: "Large Language Models" },
-        { zh: "生成式推荐", en: "Generative Recommendation" },
-        { zh: "模型方法", en: "Model Methods" },
+        { zh: "推荐系统", en: "Recommender Systems" },
       ],
     },
     {

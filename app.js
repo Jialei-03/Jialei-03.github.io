@@ -39,7 +39,7 @@
       nav: { about: "关于", education: "教育经历", publications: "论文", contact: "联系" },
       links: { email: "邮箱" },
       profile: {
-        eyebrow: "推荐系统 · 大语言模型",
+        eyebrow: "智能体 · 大语言模型 · 推荐系统",
         motto: "无限进步。",
       },
       labels: { focus: "方向", affiliation: "单位", profile: "主页", staticProfile: "静态主页", interestsInline: "研究兴趣" },
@@ -78,7 +78,7 @@
       nav: { about: "About", education: "Education", publications: "Publications", contact: "Contact" },
       links: { email: "Email" },
       profile: {
-        eyebrow: "Recommender Systems · Large Language Models",
+        eyebrow: "AI Agents · Large Language Models · Recommender Systems",
         motto: "Always improving.",
       },
       labels: { focus: "Focus", affiliation: "Affiliation", profile: "Profile", staticProfile: "Static profile", interestsInline: "Interests" },

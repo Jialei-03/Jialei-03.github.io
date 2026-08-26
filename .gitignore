@@ -9,3 +9,7 @@
 
 # \u672c\u5730\u670d\u52a1\u65e5\u5fd7
 *.log
+
+# Test dependencies and artifacts
+node_modules/
+test-results/
