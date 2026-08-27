@@ -19,6 +19,10 @@ window.SITE_CONFIG = {
   profile: {
     chineseName: "李嘉磊",
     englishName: "Jialei Li",
+    displayName: {
+      zh: "李嘉磊 / Jialei Li",
+      en: "Jialei Li",
+    },
     brand: "Jialei Li",
     title: "",
     location: "",

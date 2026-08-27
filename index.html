@@ -1,14 +1,14 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en" data-lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="李嘉磊 / Jialei Li 的学术主页，研究方向包括智能体、大语言模型与推荐系统。" />
+    <meta name="description" content="Jialei Li's academic homepage, featuring research on AI agents, large language models, and recommender systems." />
     <meta name="theme-color" content="#fbfaf6" />
-    <meta property="og:title" content="李嘉磊 / Jialei Li" />
+    <meta property="og:title" content="Jialei Li" />
     <meta property="og:description" content="Research on AI agents, large language models, and recommender systems." />
     <meta property="og:type" content="profile" />
-    <title>李嘉磊 / Jialei Li</title>
+    <title>Jialei Li · Academic Homepage</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,400..700,30..100,0..1;1,9..144,400..600,30..100,0..1&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,500&family=Inter:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;700&display=swap" rel="stylesheet" />
@@ -16,21 +16,21 @@
     <link rel="stylesheet" href="./styles.css?v=20260826-profile" />
   </head>
   <body>
-    <a class="skip-link" href="#main">跳到主内容</a>
+    <a class="skip-link" href="#main" data-i18n="a11y.skipMain">Skip to main content</a>
 
     <nav class="site-nav" id="topbar" aria-label="Primary">
       <div class="nav-wrapper">
-        <a href="#about" class="nav-brand" aria-label="返回顶部">
+        <a href="#about" class="nav-brand" aria-label="Back to top" data-i18n-aria-label="a11y.backToTop">
           <span class="dot" aria-hidden="true"></span>
           <span data-bind="meta.brand">Jialei Li</span>
         </a>
         <div class="nav-links" id="topnav">
-          <a href="#about" class="active" data-i18n="nav.about">关于</a>
-          <a href="#education" data-i18n="nav.education">教育经历</a>
-          <a href="#publications" data-i18n="nav.publications">论文</a>
+          <a href="#about" class="active" data-i18n="nav.about">About</a>
+          <a href="#education" data-i18n="nav.education">Education</a>
+          <a href="#publications" data-i18n="nav.publications">Publications</a>
         </div>
         <div class="nav-actions">
-          <button class="lang-toggle" id="lang-toggle" type="button" aria-label="Switch to English" title="Switch language">EN</button>
+          <button class="lang-toggle" id="lang-toggle" type="button" aria-label="切换到中文" title="切换到中文">中</button>
         </div>
       </div>
     </nav>
@@ -39,22 +39,19 @@
       <div class="wrap">
         <section class="hero" id="about" aria-labelledby="profile-name">
           <div class="bio">
-            <div class="hero-eyebrow" data-i18n="profile.eyebrow">智能体 · 大语言模型 · 推荐系统</div>
-            <h1 class="name-title" id="profile-name">
-              <span data-bind="profile.englishName">Jialei Li</span>
-              <span class="chinese-name" data-bind="profile.chineseName">李嘉磊</span>
-            </h1>
+            <div class="hero-eyebrow" data-i18n="profile.eyebrow">AI Agents · Large Language Models · Recommender Systems</div>
+            <h1 class="name-title" id="profile-name" data-bind="profile.displayName">Jialei Li</h1>
 
             <blockquote class="motto" data-i18n="profile.motto">
-              无限进步。
+              Always improving.
             </blockquote>
 
             <p class="lede" id="bio" data-bind="profile.summary">
-              我目前是中国科学技术大学人工智能与数据科学学院大数据技术与工程专业硕士生，研究方向包括智能体、大语言模型与推荐系统。
+              I am a master's student in Big Data Technology and Engineering at the School of Artificial Intelligence and Data Science, University of Science and Technology of China. My research interests include AI agents, large language models, and recommender systems.
             </p>
 
             <div class="interests">
-              <span class="label" data-i18n="labels.interestsInline">研究兴趣</span>
+              <span class="label" data-i18n="labels.interestsInline">Interests</span>
               <span id="interest-inline"></span>
             </div>
 
@@ -81,7 +78,7 @@
         <section id="news" aria-labelledby="news-heading">
           <header class="section-title">
             <span class="num">I.</span>
-            <h2 id="news-heading" data-i18n="sections.news">动态</h2>
+            <h2 id="news-heading" data-i18n="sections.news">News</h2>
             <span class="rule" aria-hidden="true"></span>
           </header>
           <ul class="news-list" id="news-list"></ul>
@@ -90,7 +87,7 @@
         <section id="education" aria-labelledby="education-heading">
           <header class="section-title">
             <span class="num">II.</span>
-            <h2 id="education-heading" data-i18n="sections.education">教育经历</h2>
+            <h2 id="education-heading" data-i18n="sections.education">Education</h2>
             <span class="rule" aria-hidden="true"></span>
           </header>
           <div id="education-list"></div>
@@ -99,7 +96,7 @@
         <section id="publications" aria-labelledby="publications-heading">
           <header class="section-title">
             <span class="num">III.</span>
-            <h2 id="publications-heading" data-i18n="sections.publications">论文与产出</h2>
+            <h2 id="publications-heading" data-i18n="sections.publications">Selected Publications</h2>
             <span class="rule" aria-hidden="true"></span>
           </header>
           <div id="publication-list"></div>
@@ -108,10 +105,10 @@
     </main>
 
     <footer class="site-footer">
-      <span><span data-i18n="footer.updated">更新于</span> <span data-bind="meta.updatedAt">2026-08</span></span>
+      <span><span data-i18n="footer.updated">Last updated</span> <span data-bind="meta.updatedAt">2026-08</span></span>
     </footer>
 
-    <script src="./data/site.js?v=20260826-profile" defer></script>
-    <script src="./app.js?v=20260826-profile" defer></script>
+    <script src="./data/site.js?v=20260827-default-en" defer></script>
+    <script src="./app.js?v=20260827-default-en" defer></script>
   </body>
 </html>

@@ -32,11 +32,12 @@
 
   const $ = (sel, root) => (root || document).querySelector(sel);
   const $$ = (sel, root) => Array.from((root || document).querySelectorAll(sel));
-  let currentLang = window.localStorage.getItem("lang") === "en" ? "en" : "zh";
+  let currentLang = window.localStorage.getItem("lang") === "zh" ? "zh" : "en";
 
   const i18n = {
     zh: {
       nav: { about: "关于", education: "教育经历", publications: "论文", contact: "联系" },
+      a11y: { skipMain: "跳到主内容", backToTop: "返回顶部" },
       links: { email: "邮箱" },
       profile: {
         eyebrow: "智能体 · 大语言模型 · 推荐系统",
@@ -76,6 +77,7 @@
     },
     en: {
       nav: { about: "About", education: "Education", publications: "Publications", contact: "Contact" },
+      a11y: { skipMain: "Skip to main content", backToTop: "Back to top" },
       links: { email: "Email" },
       profile: {
         eyebrow: "AI Agents · Large Language Models · Recommender Systems",
@@ -203,12 +205,20 @@
       el.textContent = textAt(el.getAttribute("data-i18n"));
     });
 
+    $$("[data-i18n-aria-label]").forEach((el) => {
+      el.setAttribute("aria-label", textAt(el.getAttribute("data-i18n-aria-label")));
+    });
+
     $$("[data-optional]").forEach((el) => {
       const value = valueAtPath(el.getAttribute("data-optional"));
       el.hidden = !isPresent(value);
     });
 
-    const displayName = profileCfg.name || metaCfg.name || `${profileCfg.chineseName || "李嘉磊"} / ${profileCfg.englishName || "Jialei Li"}`;
+    const displayName =
+      localize(profileCfg.displayName) ||
+      (currentLang === "zh"
+        ? `${profileCfg.chineseName || "李嘉磊"} / ${profileCfg.englishName || "Jialei Li"}`
+        : profileCfg.englishName || "Jialei Li");
     const title = `${displayName} · ${textAt("titleSuffix")}`;
     document.title = title;
 
@@ -388,15 +398,12 @@
   }
 
   async function loadProfile() {
-    const displayName = profileCfg.name || metaCfg.name || `${profileCfg.chineseName || "李嘉磊"} / ${profileCfg.englishName || "Jialei Li"}`;
     const profileStatus = $("#profile-status");
     const snapshot = $("#github-snapshot");
     try {
       const profile = await fetchJson(PROFILE_URL);
       const avatar = $("#avatar");
       if (avatar && profileCfg.avatarUrl) avatar.src = profileCfg.avatarUrl;
-      const h1 = $("#profile-name");
-      if (h1) h1.textContent = displayName;
       if (profileStatus) profileStatus.textContent = profile.bio ? textAt("githubLinked") : textAt("githubStatic");
       if (snapshot) snapshot.setAttribute("data-status", "ready");
       $("#public-repos").textContent = formatNumber(profile.public_repos);
@@ -405,8 +412,6 @@
       $("#gists").textContent = formatNumber(profile.public_gists);
     } catch (err) {
       console.info("GitHub profile unavailable.", err);
-      const h1 = $("#profile-name");
-      if (h1) h1.textContent = displayName;
       if (profileStatus) profileStatus.textContent = textAt("githubStatic");
       if (snapshot) {
         snapshot.setAttribute("data-status", "unavailable");
