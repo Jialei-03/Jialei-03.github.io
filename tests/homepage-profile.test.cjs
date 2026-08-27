@@ -222,7 +222,7 @@ test("portrait loads the supplied square photo", async () => {
     width: image.naturalWidth,
     height: image.naturalHeight,
   }));
-  assert.deepEqual(dimensions, { width: 1280, height: 1280 });
+  assert.deepEqual(dimensions, { width: 1901, height: 1901 });
 
   await page.close();
 });
