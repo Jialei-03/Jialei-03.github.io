@@ -9,8 +9,9 @@ export const profile = {
   lab: { en: "School of AI & Data Science\nLDS Lab", zh: "人工智能与数据科学学院\nLDS 实验室" },
   email: "lijialei.cn@gmail.com",
   github: "https://github.com/Jialei-03",
-  avatar: "/assets/avatar.webp",
-  avatarSmall: "/assets/avatar-small.webp",
+  // GitHub profile image: https://avatars.githubusercontent.com/u/184720084?v=4
+  avatar: "/assets/github-avatar.webp",
+  avatarSmall: "/assets/github-avatar-small.webp",
   summary: {
     en: "I am a master's student in Big Data Technology and Engineering at the School of Artificial Intelligence and Data Science, University of Science and Technology of China. My research interests include AI agents, large language models, and recommender systems.",
     zh: "我目前是中国科学技术大学人工智能与数据科学学院大数据技术与工程专业硕士生，研究方向包括智能体、大语言模型与推荐系统。",

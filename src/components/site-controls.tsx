@@ -20,7 +20,7 @@ export function useLanguage() {
   useEffect(() => {
     document.documentElement.lang = lang === "zh" ? "zh-CN" : "en"
     document.documentElement.dataset.lang = lang
-    document.title = lang === "zh" ? "李嘉磊 · 学术主页" : "Jialei Li · Academic Homepage"
+    document.title = "Jialei Li | 李嘉磊"
   }, [lang])
   const toggleLanguage = () => {
     const next = lang === "en" ? "zh" : "en"

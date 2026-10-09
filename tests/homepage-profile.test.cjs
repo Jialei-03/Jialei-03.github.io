@@ -45,7 +45,7 @@ async function assertHealthy(page) {
 
 test('the new homepage has an English identity and the current RecSys publication', async () => {
   const page = await newPage();
-  assert.equal(await page.title(), 'Jialei Li · Academic Homepage');
+  assert.equal(await page.title(), 'Jialei Li | 李嘉磊');
   assert.equal(await page.locator('#profile-name').textContent(), 'Jialei Li');
   assert.match(await page.locator('#bio').textContent(), /master's student in Big Data Technology and Engineering/);
   assert.equal(await page.locator('.paper-item').count(), 3);
@@ -71,7 +71,7 @@ test('Chinese content and the language preference survive a reload', async () =>
   assert.match(await page.locator('#publication-soda').textContent(), /短篇论文/);
   assert.equal(await page.evaluate(() => localStorage.getItem('lang')), 'zh');
   await page.reload({ waitUntil: 'networkidle' });
-  assert.equal(await page.title(), '李嘉磊 · 学术主页');
+  assert.equal(await page.title(), 'Jialei Li | 李嘉磊');
   assert.equal(await page.locator('#profile-name').textContent(), '李嘉磊');
   await page.getByRole('button', { name: 'Switch to English' }).click();
   assert.equal(await page.locator('html').getAttribute('lang'), 'en');
@@ -149,7 +149,7 @@ test('an unavailable portrait has a visible fallback without breaking the page',
   const page = await browser.newPage();
   page.errors = [];
   page.on('pageerror', error => page.errors.push(error.message));
-  await page.route('**/assets/avatar*.webp', route => route.abort());
+  await page.route('**/assets/github-avatar*.webp', route => route.abort());
   await page.goto(baseUrl, { waitUntil: 'networkidle' });
   assert.equal(await page.locator('.photo-fallback').textContent(), 'JL');
   assert.equal(await page.locator('.paper-item').count(), 3);

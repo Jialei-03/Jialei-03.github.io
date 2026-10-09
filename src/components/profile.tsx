@@ -14,7 +14,7 @@ export function Profile({ lang }: { lang: Language }) {
   }, [])
   return <aside className="profile-rail" aria-labelledby="profile-name">
     <div className="profile-photo">
-      <img id="avatar" ref={imageRef} src={profile.avatar} srcSet={`${profile.avatarSmall} 256w, ${profile.avatar} 640w`} sizes="(max-width: 767px) 112px, (max-width: 1100px) 200px, 224px" alt="Jialei Li standing beside a panda sculpture" width="224" height="224" fetchPriority="high" hidden={imageFailed} onError={() => setImageFailed(true)} />
+      <img id="avatar" ref={imageRef} src={profile.avatar} srcSet={`${profile.avatarSmall} 256w, ${profile.avatar} 460w`} sizes="(max-width: 767px) 112px, (max-width: 1100px) 200px, 224px" alt={lang === "en" ? "Jialei-03 GitHub avatar" : "Jialei-03 的 GitHub 头像"} width="224" height="224" fetchPriority="high" hidden={imageFailed} onError={() => setImageFailed(true)} />
       {imageFailed && <span className="photo-fallback" aria-label="Jialei Li">JL</span>}
     </div>
     <div className="profile-identity">

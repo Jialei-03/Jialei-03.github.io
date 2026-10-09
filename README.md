@@ -24,7 +24,7 @@ pnpm dev
 
 界面文本在 `src/App.tsx`，设计变量与响应式布局在 `src/index.css`。shadcn/ui 组件源代码位于 `src/components/ui/`，配置为 `components.json`。
 
-`public/assets/` 中的图片用于发布。`assets/` 保留原始照片和既有配图，便于后续调整素材。照片使用 256px / 640px 的响应式 WebP，论文配图也做了压缩。更换原图后运行 `pnpm optimize:assets` 生成发布版本。
+`public/assets/` 中的图片用于发布。`assets/` 保留素材源文件，便于后续调整。头像取自 [Jialei-03 的 GitHub 账号](https://github.com/Jialei-03)，使用 256px / 460px 的响应式 WebP，浏览器图标也由该头像生成。更换头像源文件 `assets/github-avatar.jpg` 后运行 `pnpm optimize:assets`，即可重新生成发布版本。论文配图也做了压缩。
 
 SODA 按 [arXiv 最新版](https://arxiv.org/abs/2603.00700) 和[官方仓库](https://github.com/freyasa/SODA)列为 RecSys 2026 Short Paper，使用正式标题 **Distribution-Level Contrastive Supervision for Generative Recommendation**。SODA 配图取自论文 Figure 1（CC BY），来源已写入数据文件。
 
