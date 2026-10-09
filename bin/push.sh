@@ -9,6 +9,8 @@ set -euo pipefail
 MSG="${1:-update personal homepage}"
 cd "$(dirname "$0")/.."
 
+pnpm test
+
 if [ ! -d .git ]; then
   echo ">> git init"
   git init

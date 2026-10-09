@@ -13,3 +13,4 @@
 # Test dependencies and artifacts
 node_modules/
 test-results/
+dist/

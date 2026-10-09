@@ -1,66 +1,58 @@
-# 李嘉磊 / Jialei Li Academic CV
+# Jialei Li / 李嘉磊
 
-一个部署在 GitHub Pages 上的纯静态学术 CV + 个人名片页面。页面保留纸感编辑风与暗色模式,内容由 `data/site.js` 驱动,适合长期维护教育背景、研究方向、项目、论文、技能和联系方式。
+个人学术主页。使用 React、TypeScript、Vite、Tailwind CSS v4，以及通过官方 CLI 安装的 shadcn/ui Radix Nova 组件。
 
-## 本地预览
+## 本地开发
 
-```bash
-cd /Users/leslie/Desktop/个人主页
-python3 -m http.server 8765
-# 打开 http://127.0.0.1:8765
-```
-
-## 修改内容
-
-大多数 CV 信息只需要编辑 [`data/site.js`](./data/site.js):
-
-- `profile`: 姓名、身份、地点、摘要、PDF 简历状态
-- `interests`: 研究兴趣
-- `education`: 教育经历
-- `projects`: 研究/工程项目
-- `publications`: 论文、preprint、技术报告或项目笔记
-- `skills`: 技能分组
-- `awards`: 荣誉/奖项
-- `contact`: Email、GitHub、LinkedIn 等链接
-
-PDF 简历按钮目前是 `Coming soon`;如果将来要启用,把 PDF 放到 `assets/lijialei-resume.pdf`,并在 `data/site.js` 中把 `profile.pdf.status` 改成 `available`。
-
-## 自动验证
-
-主页的中英文个人资料、教育经历和头像尺寸由浏览器测试覆盖。首次运行先安装依赖和 Chromium：
+需要 Node.js 22.12+ 与 pnpm。
 
 ```bash
 pnpm install
+pnpm dev
+```
+
+开发地址由终端输出，默认是 http://127.0.0.1:5173。
+
+## 更新内容
+
+统一编辑 `src/data/site.ts`：
+
+- `profile`：姓名、联系方式、简介和研究方向
+- `publications`：论文、作者、会议类型、配图及论文/PDF/代码链接
+- `news`：中英文动态
+- `education`：教育经历
+
+界面文本在 `src/App.tsx`，设计变量与响应式布局在 `src/index.css`。shadcn/ui 组件源代码位于 `src/components/ui/`，配置为 `components.json`。
+
+`public/assets/` 中的图片用于发布。`assets/` 保留原始照片和既有配图，便于后续调整素材。照片使用 256px / 640px 的响应式 WebP，论文配图也做了压缩。更换原图后运行 `pnpm optimize:assets` 生成发布版本。
+
+SODA 按 [arXiv 最新版](https://arxiv.org/abs/2603.00700) 和[官方仓库](https://github.com/freyasa/SODA)列为 RecSys 2026 Short Paper，使用正式标题 **Distribution-Level Contrastive Supervision for Generative Recommendation**。SODA 配图取自论文 Figure 1（CC BY），来源已写入数据文件。
+
+## 构建和检查
+
+```bash
+pnpm build
+pnpm preview
+```
+
+构建输出为 `dist/`，会预渲染个人资料、论文和动态，搜索引擎及关闭 JavaScript 的浏览器都能读取主要内容。网站运行时不需要 GitHub API 或远程字体服务。
+
+浏览器回归测试覆盖语言与主题偏好、论文筛选、键盘操作、动态定位、320px 至 1440px 的响应式布局、无 JavaScript 浏览和图片失败状态：
+
+```bash
 pnpm exec playwright install chromium
 pnpm test
 ```
 
-## 部署
+## 设计与组件
 
-仓库: https://github.com/Jialei-03/Jialei-03.github.io
+以清晰的字体层级、侧栏个人资料和研究内容为主。深浅色使用相同语义变量，支持系统主题、手动切换及减少动态效果的偏好。
 
-上线地址: https://jialei-03.github.io/
+组件通过 [shadcn/ui](https://ui.shadcn.com/) 的官方 CLI 安装并定制；[awesome-shadcn-ui](https://github.com/birobirobiro/awesome-shadcn-ui) 用于检索社区组件方案。它是资源目录，项目无需安装整份目录或未使用的组件库。
 
-常规更新:
+## 发布
 
-```bash
-git add -A
-git commit -m "update academic cv"
-git push
-```
-
-也可以使用:
-
-```bash
-bin/push.sh "update academic cv"
-```
-
-## 技术说明
-
-- 纯静态: HTML + CSS + JavaScript,无构建步骤
-- GitHub API 仅作为辅助:头像、公开仓库统计、置顶仓库和语言占比
-- GitHub API 不可用时,静态 CV 内容仍完整可读
-- 支持暗色模式、移动端单列布局、键盘导航和 `prefers-reduced-motion`
+发布流程已迁移到 GitHub Actions，详见 `DEPLOY.md`。原来的“直接发布仓库根目录”方式不适用于当前源码。
 
 ## License
 

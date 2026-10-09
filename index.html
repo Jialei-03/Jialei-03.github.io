@@ -1,114 +1,28 @@
 <!doctype html>
 <html lang="en" data-lang="en">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Jialei Li's academic homepage, featuring research on AI agents, large language models, and recommender systems." />
-    <meta name="theme-color" content="#fbfaf6" />
-    <meta property="og:title" content="Jialei Li" />
-    <meta property="og:description" content="Research on AI agents, large language models, and recommender systems." />
+    <meta name="description" content="Jialei Li, master's student at USTC. Research on AI agents, large language models, and recommender systems." />
+    <meta name="theme-color" content="#fafbfc" />
+    <meta property="og:title" content="Jialei Li | Research &amp; Engineering" />
+    <meta property="og:description" content="AI agents, language models, and recommendation. Explore research by Jialei Li at USTC." />
     <meta property="og:type" content="profile" />
+    <meta property="og:url" content="https://jialei-03.github.io/" />
+    <link rel="canonical" href="https://jialei-03.github.io/" />
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
     <title>Jialei Li · Academic Homepage</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,400..700,30..100,0..1;1,9..144,400..600,30..100,0..1&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,500&family=Inter:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;700&display=swap" rel="stylesheet" />
-    <link rel="icon" href="./assets/favicon.svg?v=20260613-favicon" type="image/svg+xml" />
-    <link rel="stylesheet" href="./styles.css?v=20260826-profile" />
+    <script>
+      try {
+        const preference = localStorage.getItem("theme");
+        const dark = preference === "dark" || (!preference && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.classList.toggle("dark", dark);
+        document.documentElement.dataset.theme = dark ? "dark" : "light";
+      } catch (_) {}
+    </script>
   </head>
   <body>
-    <a class="skip-link" href="#main" data-i18n="a11y.skipMain">Skip to main content</a>
-
-    <nav class="site-nav" id="topbar" aria-label="Primary">
-      <div class="nav-wrapper">
-        <a href="#about" class="nav-brand" aria-label="Back to top" data-i18n-aria-label="a11y.backToTop">
-          <span class="dot" aria-hidden="true"></span>
-          <span data-bind="meta.brand">Jialei Li</span>
-        </a>
-        <div class="nav-links" id="topnav">
-          <a href="#about" class="active" data-i18n="nav.about">About</a>
-          <a href="#education" data-i18n="nav.education">Education</a>
-          <a href="#publications" data-i18n="nav.publications">Publications</a>
-        </div>
-        <div class="nav-actions">
-          <button class="lang-toggle" id="lang-toggle" type="button" aria-label="切换到中文" title="切换到中文">中</button>
-        </div>
-      </div>
-    </nav>
-
-    <main id="main">
-      <div class="wrap">
-        <section class="hero" id="about" aria-labelledby="profile-name">
-          <div class="bio">
-            <div class="hero-eyebrow" data-i18n="profile.eyebrow">AI Agents · Large Language Models · Recommender Systems</div>
-            <h1 class="name-title" id="profile-name" data-bind="profile.displayName">Jialei Li</h1>
-
-            <blockquote class="motto" data-i18n="profile.motto">
-              Always improving.
-            </blockquote>
-
-            <p class="lede" id="bio" data-bind="profile.summary">
-              I am a master's student in Big Data Technology and Engineering at the School of Artificial Intelligence and Data Science, University of Science and Technology of China. My research interests include AI agents, large language models, and recommender systems.
-            </p>
-
-            <div class="interests">
-              <span class="label" data-i18n="labels.interestsInline">Interests</span>
-              <span id="interest-inline"></span>
-            </div>
-
-            <div class="social-icons" aria-label="Profile links">
-              <a href="mailto:lijialei.cn@gmail.com" title="Email" aria-label="Email">
-                <span class="link-icon icon-email" aria-hidden="true"></span>
-                <span>Email</span>
-              </a>
-              <a href="https://github.com/Jialei-03" target="_blank" rel="noreferrer" title="GitHub" aria-label="GitHub">
-                <span class="link-icon icon-github" aria-hidden="true"></span>
-                <span>GitHub</span>
-              </a>
-            </div>
-          </div>
-
-          <figure class="portrait">
-            <span class="avatar-fallback" id="avatar-fallback" data-bind="profile.avatarFallback">Jialei Li</span>
-            <img id="avatar" src="./assets/avatar.jpg?v=20260827-photo" alt="Jialei Li standing beside a panda sculpture" width="280" height="280" />
-          </figure>
-        </section>
-
-        <hr class="section-sep" aria-hidden="true" />
-
-        <section id="news" aria-labelledby="news-heading">
-          <header class="section-title">
-            <span class="num">I.</span>
-            <h2 id="news-heading" data-i18n="sections.news">News</h2>
-            <span class="rule" aria-hidden="true"></span>
-          </header>
-          <ul class="news-list" id="news-list"></ul>
-        </section>
-
-        <section id="education" aria-labelledby="education-heading">
-          <header class="section-title">
-            <span class="num">II.</span>
-            <h2 id="education-heading" data-i18n="sections.education">Education</h2>
-            <span class="rule" aria-hidden="true"></span>
-          </header>
-          <div id="education-list"></div>
-        </section>
-
-        <section id="publications" aria-labelledby="publications-heading">
-          <header class="section-title">
-            <span class="num">III.</span>
-            <h2 id="publications-heading" data-i18n="sections.publications">Selected Publications</h2>
-            <span class="rule" aria-hidden="true"></span>
-          </header>
-          <div id="publication-list"></div>
-        </section>
-      </div>
-    </main>
-
-    <footer class="site-footer">
-      <span><span data-i18n="footer.updated">Last updated</span> <span data-bind="meta.updatedAt">2026-08</span></span>
-    </footer>
-
-    <script src="./data/site.js?v=20260827-default-en" defer></script>
-    <script src="./app.js?v=20260827-default-en" defer></script>
+    <div id="root"><!--app-html--></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

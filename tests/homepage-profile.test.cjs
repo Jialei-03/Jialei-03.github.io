@@ -1,228 +1,158 @@
-const { after, before, test } = require("node:test");
-const assert = require("node:assert/strict");
-const http = require("node:http");
-const path = require("node:path");
-const { readFile } = require("node:fs/promises");
-const { chromium } = require("playwright");
+const { after, before, test } = require('node:test');
+const assert = require('node:assert/strict');
+const http = require('node:http');
+const path = require('node:path');
+const { readFile } = require('node:fs/promises');
+const { chromium } = require('playwright');
 
-const root = path.resolve(__dirname, "..");
-const githubProfileUrl = "https://api.github.com/users/Jialei-03";
-const githubProfile = {
-  login: "Jialei-03",
-  id: 123456789,
-  node_id: "U_kgDOB1vNFQ",
-  avatar_url: "https://avatars.githubusercontent.com/u/123456789?v=4",
-  gravatar_id: "",
-  url: githubProfileUrl,
-  html_url: "https://github.com/Jialei-03",
-  followers_url: "https://api.github.com/users/Jialei-03/followers",
-  following_url: "https://api.github.com/users/Jialei-03/following{/other_user}",
-  gists_url: "https://api.github.com/users/Jialei-03/gists{/gist_id}",
-  starred_url: "https://api.github.com/users/Jialei-03/starred{/owner}{/repo}",
-  subscriptions_url: "https://api.github.com/users/Jialei-03/subscriptions",
-  organizations_url: "https://api.github.com/users/Jialei-03/orgs",
-  repos_url: "https://api.github.com/users/Jialei-03/repos",
-  events_url: "https://api.github.com/users/Jialei-03/events{/privacy}",
-  received_events_url: "https://api.github.com/users/Jialei-03/received_events",
-  type: "User",
-  user_view_type: "public",
-  site_admin: false,
-  name: "Jialei Li",
-  company: null,
-  blog: "https://jialei-03.github.io/",
-  location: null,
-  email: null,
-  hireable: null,
-  bio: "Researcher",
-  twitter_username: null,
-  notification_email: null,
-  public_repos: 10,
-  public_gists: 0,
-  followers: 5,
-  following: 3,
-  created_at: "2023-01-01T00:00:00Z",
-  updated_at: "2026-08-27T00:00:00Z",
-};
-const mimeTypes = {
-  ".css": "text/css; charset=utf-8",
-  ".html": "text/html; charset=utf-8",
-  ".jpg": "image/jpeg",
-  ".js": "text/javascript; charset=utf-8",
-  ".png": "image/png",
-  ".svg": "image/svg+xml",
-};
-
-let browser;
-let server;
-let baseUrl;
-
-async function newLocalPage(options = {}) {
-  const page = await browser.newPage();
-  await page.route("**/*", async (route) => {
-    const requestUrl = new URL(route.request().url());
-    if (requestUrl.href === githubProfileUrl && options.githubProfileGate) {
-      await options.githubProfileGate;
-      return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(githubProfile) });
-    }
-    return requestUrl.origin === baseUrl ? route.continue() : route.abort();
-  });
-  return page;
-}
+const root = path.resolve(__dirname, '../dist');
+const mime = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.jpg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.woff2': 'font/woff2' };
+let browser, server, baseUrl;
 
 before(async () => {
   server = http.createServer(async (request, response) => {
     try {
-      const pathname = decodeURIComponent(new URL(request.url, "http://localhost").pathname);
-      const requestedPath = pathname === "/" ? "index.html" : pathname.replace(/^\/+/, "");
-      const filePath = path.resolve(root, requestedPath);
-      if (filePath !== root && !filePath.startsWith(`${root}${path.sep}`)) {
-        response.writeHead(403).end("Forbidden");
-        return;
-      }
-      const body = await readFile(filePath);
-      response.writeHead(200, { "Content-Type": mimeTypes[path.extname(filePath)] || "application/octet-stream" });
-      response.end(body);
-    } catch {
-      response.writeHead(404).end("Not found");
-    }
+      const pathname = decodeURIComponent(new URL(request.url, 'http://localhost').pathname);
+      const file = path.resolve(root, pathname === '/' ? 'index.html' : pathname.replace(/^\/+/, ''));
+      if (!file.startsWith(`${root}${path.sep}`)) return response.writeHead(403).end();
+      const body = await readFile(file);
+      response.writeHead(200, { 'Content-Type': mime[path.extname(file)] || 'application/octet-stream' }).end(body);
+    } catch { response.writeHead(404).end('Not found'); }
   });
-
-  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
-  const address = server.address();
-  baseUrl = `http://127.0.0.1:${address.port}`;
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  baseUrl = `http://127.0.0.1:${server.address().port}`;
   browser = await chromium.launch({ headless: true });
 });
 
 after(async () => {
   await browser?.close();
-  await new Promise((resolve, reject) => server?.close((error) => (error ? reject(error) : resolve())));
+  await new Promise(resolve => server?.close(resolve));
 });
 
-test("homepage presents the current research focus in both languages", async () => {
-  const page = await newLocalPage();
-  await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
+async function newPage(options = {}) {
+  const page = await browser.newPage(options);
+  page.errors = [];
+  page.on('pageerror', error => page.errors.push(error.message));
+  await page.route('**/*', route => new URL(route.request().url()).origin === baseUrl ? route.continue() : route.abort());
+  await page.goto(baseUrl, { waitUntil: 'networkidle' });
+  return page;
+}
 
-  assert.equal(await page.locator(".hero-eyebrow").textContent(), "AI Agents · Large Language Models · Recommender Systems");
-  assert.equal(
-    await page.locator("#bio").textContent(),
-    "I am a master's student in Big Data Technology and Engineering at the School of Artificial Intelligence and Data Science, University of Science and Technology of China. My research interests include AI agents, large language models, and recommender systems.",
-  );
-  assert.deepEqual(await page.locator("#interest-inline span").allTextContents(), [
-    "AI Agents",
-    "Large Language Models",
-    "Recommender Systems",
-  ]);
+async function assertHealthy(page) {
+  assert.deepEqual(page.errors, [], 'No client or hydration errors');
+  assert.equal(await page.locator('img').evaluateAll(images => images.every(image => image.complete && image.naturalWidth > 0)), true, 'All visible images load');
+}
 
-  await page.locator("#lang-toggle").click();
-  assert.equal(await page.locator(".hero-eyebrow").textContent(), "智能体 · 大语言模型 · 推荐系统");
-  assert.equal(
-    await page.locator("#bio").textContent(),
-    "我目前是中国科学技术大学人工智能与数据科学学院大数据技术与工程专业硕士生，研究方向包括智能体、大语言模型与推荐系统。",
-  );
-  assert.deepEqual(await page.locator("#interest-inline span").allTextContents(), ["智能体", "大语言模型", "推荐系统"]);
-
+test('the new homepage has an English identity and the current RecSys publication', async () => {
+  const page = await newPage();
+  assert.equal(await page.title(), 'Jialei Li · Academic Homepage');
+  assert.equal(await page.locator('#profile-name').textContent(), 'Jialei Li');
+  assert.match(await page.locator('#bio').textContent(), /master's student in Big Data Technology and Engineering/);
+  assert.equal(await page.locator('.paper-item').count(), 3);
+  const soda = page.locator('#publication-soda');
+  assert.match(await soda.textContent(), /RecSys 2026/);
+  assert.match(await soda.textContent(), /Short Paper/);
+  assert.match(await soda.textContent(), /Distribution-Level Contrastive Supervision/);
+  assert.equal(await soda.getByRole('link', { name: 'Code', exact: true }).getAttribute('href'), 'https://github.com/freyasa/SODA');
+  assert.equal(await soda.getByRole('link', { name: 'Paper', exact: true }).getAttribute('href'), 'https://doi.org/10.1145/3773078.3831770');
+  assert.equal(await soda.locator('.author-list strong').textContent(), 'Jialei Li');
+  await page.locator('#education').scrollIntoViewIfNeeded();
+  await assertHealthy(page);
   await page.close();
 });
 
-test("new visitors see an English identity after GitHub loading settles", async () => {
-  const page = await newLocalPage();
-  await page.goto(baseUrl, { waitUntil: "networkidle" });
-
-  assert.equal(await page.locator("html").getAttribute("lang"), "en");
-  assert.equal(await page.title(), "Jialei Li · Academic Homepage");
-  assert.equal(await page.locator("#profile-name").innerText(), "Jialei Li");
-  assert.equal(await page.locator("#lang-toggle").textContent(), "中");
-  assert.equal(await page.locator("#lang-toggle").getAttribute("aria-label"), "切换到中文");
-  assert.equal(await page.locator(".skip-link").textContent(), "Skip to main content");
-  assert.equal(await page.locator(".nav-brand").getAttribute("aria-label"), "Back to top");
-
+test('Chinese content and the language preference survive a reload', async () => {
+  const page = await newPage();
+  await page.getByRole('button', { name: '切换到中文' }).click();
+  assert.equal(await page.locator('html').getAttribute('lang'), 'zh-CN');
+  assert.equal(await page.locator('#profile-name').textContent(), '李嘉磊');
+  assert.match(await page.locator('#bio').textContent(), /大数据技术与工程专业硕士生/);
+  assert.match(await page.locator('#education-list').textContent(), /LDS 实验室/);
+  assert.match(await page.locator('#publication-soda').textContent(), /短篇论文/);
+  assert.equal(await page.evaluate(() => localStorage.getItem('lang')), 'zh');
+  await page.reload({ waitUntil: 'networkidle' });
+  assert.equal(await page.title(), '李嘉磊 · 学术主页');
+  assert.equal(await page.locator('#profile-name').textContent(), '李嘉磊');
+  await page.getByRole('button', { name: 'Switch to English' }).click();
+  assert.equal(await page.locator('html').getAttribute('lang'), 'en');
+  assert.deepEqual(page.errors, []);
   await page.close();
 });
 
-test("static fallback is a complete English identity without JavaScript", async () => {
-  const page = await browser.newPage({ javaScriptEnabled: false });
-  await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
-
-  assert.equal(await page.locator("html").getAttribute("lang"), "en");
-  assert.equal(await page.title(), "Jialei Li · Academic Homepage");
-  assert.equal(await page.locator("#profile-name").innerText(), "Jialei Li");
-  assert.equal(await page.locator(".skip-link").textContent(), "Skip to main content");
-  assert.equal(await page.locator(".nav-brand").getAttribute("aria-label"), "Back to top");
-
+test('publication filters work with both pointer and keyboard', async () => {
+  const page = await newPage();
+  await page.getByRole('tab', { name: 'Preprints' }).click();
+  assert.equal(await page.locator('.paper-item').count(), 1);
+  assert.equal(await page.locator('.paper-item').getAttribute('data-paper-type'), 'preprint');
+  await page.getByRole('tab', { name: 'Conference' }).click();
+  assert.equal(await page.locator('.paper-item').count(), 2);
+  await page.getByRole('tab', { name: 'All work' }).click();
+  assert.equal(await page.locator('.paper-item').count(), 3);
+  await page.getByRole('tab', { name: 'All work' }).focus();
+  await page.keyboard.press('ArrowRight');
+  await page.waitForFunction(() => document.querySelectorAll('.paper-item').length === 2);
+  assert.equal(await page.getByRole('tab', { name: 'Conference' }).getAttribute('aria-selected'), 'true');
+  assert.deepEqual(page.errors, []);
   await page.close();
 });
 
-test("a delayed successful GitHub response cannot replace the English identity", async () => {
-  let releaseProfile;
-  const githubProfileGate = new Promise((resolve) => {
-    releaseProfile = resolve;
-  });
-  const page = await newLocalPage({ githubProfileGate });
-  const profileResponse = page.waitForResponse(githubProfileUrl);
-  await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
-
-  await page.locator("#lang-toggle").click();
-  await page.locator("#lang-toggle").click();
-  releaseProfile();
-  const response = await profileResponse;
-  await response.finished();
-  await page.waitForTimeout(25);
-
-  assert.equal(await page.locator("html").getAttribute("lang"), "en");
-  assert.equal(await page.title(), "Jialei Li · Academic Homepage");
-  assert.equal(await page.locator("#profile-name").innerText(), "Jialei Li");
-
+test('the SODA news anchor restores a filtered-out publication', async () => {
+  const page = await newPage({ reducedMotion: 'reduce' });
+  await page.getByRole('tab', { name: 'Preprints' }).click();
+  await page.getByRole('link', { name: /SODA appears at RecSys/ }).click();
+  assert.equal(await page.locator('.paper-item').count(), 3);
+  assert.equal(new URL(page.url()).hash, '#publication-soda');
+  const top = await page.locator('#publication-soda').evaluate(element => element.getBoundingClientRect().top);
+  assert.ok(top >= 64 && top < 200, `SODA is visible below the sticky header (${top}px)`);
+  assert.deepEqual(page.errors, []);
   await page.close();
 });
 
-test("language toggle persists a Chinese preference", async () => {
-  const page = await newLocalPage();
-  await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
-
-  await page.locator("#lang-toggle").click();
-  assert.equal(await page.locator("html").getAttribute("lang"), "zh-CN");
-  assert.equal(await page.locator("#profile-name").innerText(), "李嘉磊 / Jialei Li");
-  assert.equal(await page.locator("#lang-toggle").textContent(), "EN");
-  assert.equal(await page.locator("#lang-toggle").getAttribute("aria-label"), "Switch to English");
-  assert.equal(await page.locator(".skip-link").textContent(), "跳到主内容");
-  assert.equal(await page.locator(".nav-brand").getAttribute("aria-label"), "返回顶部");
-  assert.equal(await page.evaluate(() => localStorage.getItem("lang")), "zh");
-
-  await page.reload({ waitUntil: "domcontentloaded" });
-  assert.equal(await page.locator("html").getAttribute("lang"), "zh-CN");
-  assert.equal(await page.locator("#profile-name").innerText(), "李嘉磊 / Jialei Li");
-  assert.equal(await page.locator("#lang-toggle").textContent(), "EN");
-  assert.equal(await page.locator(".skip-link").textContent(), "跳到主内容");
-  assert.equal(await page.locator(".nav-brand").getAttribute("aria-label"), "返回顶部");
-
+test('theme follows the system and manual selection persists', async () => {
+  const page = await newPage({ colorScheme: 'dark' });
+  assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark');
+  await page.getByRole('button', { name: 'Switch to light mode' }).click();
+  assert.equal(await page.locator('html').getAttribute('data-theme'), 'light');
+  await page.reload({ waitUntil: 'networkidle' });
+  assert.equal(await page.locator('html').getAttribute('data-theme'), 'light');
+  await page.getByRole('button', { name: 'Switch to dark mode' }).click();
+  assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark');
+  assert.deepEqual(page.errors, []);
   await page.close();
 });
 
-test("education identifies the current master's program", async () => {
-  const page = await newLocalPage();
-  await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
-
-  const englishEducation = await page.locator("#education-list").textContent();
-  assert.match(englishEducation, /Master's Student in Big Data Technology and Engineering/);
-
-  await page.locator("#lang-toggle").click();
-  const education = await page.locator("#education-list").textContent();
-  assert.match(education, /大数据技术与工程，硕士研究生/);
-  assert.match(education, /LDS 实验室/);
-
+test('both languages fit mobile, tablet and desktop without horizontal scrolling', async () => {
+  const page = await newPage();
+  for (const language of ['en', 'zh']) {
+    if (language === 'zh') await page.getByRole('button', { name: '切换到中文' }).click();
+    for (const width of [1440, 1024, 768, 390, 320]) {
+      await page.setViewportSize({ width, height: 900 });
+      const layout = await page.evaluate(() => ({ viewport: innerWidth, width: document.documentElement.scrollWidth }));
+      assert.ok(layout.width <= layout.viewport, `${language} at ${width}px overflows by ${layout.width - layout.viewport}px`);
+    }
+  }
+  assert.deepEqual(page.errors, []);
   await page.close();
 });
 
-test("portrait loads the supplied square photo", async () => {
-  const page = await newLocalPage();
-  await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
-  await page.locator("#avatar").evaluate((image) => (image.complete && image.naturalWidth > 0 ? undefined : image.decode()));
+test('the pre-rendered page includes identity, papers and contact without JavaScript', async () => {
+  const page = await newPage({ javaScriptEnabled: false });
+  assert.equal(await page.locator('#profile-name').textContent(), 'Jialei Li');
+  assert.equal(await page.locator('.paper-item').count(), 3);
+  assert.match(await page.locator('#publication-soda').textContent(), /RecSys 2026/);
+  assert.equal(await page.getByRole('link', { name: 'Email me' }).getAttribute('href'), 'mailto:lijialei.cn@gmail.com');
+  assert.ok(await page.locator('#avatar').evaluate(image => image.complete && image.naturalWidth > 0));
+  await page.close();
+});
 
-  const dimensions = await page.locator("#avatar").evaluate((image) => ({
-    width: image.naturalWidth,
-    height: image.naturalHeight,
-  }));
-  assert.deepEqual(dimensions, { width: 1901, height: 1901 });
-
+test('an unavailable portrait has a visible fallback without breaking the page', async () => {
+  const page = await browser.newPage();
+  page.errors = [];
+  page.on('pageerror', error => page.errors.push(error.message));
+  await page.route('**/assets/avatar*.webp', route => route.abort());
+  await page.goto(baseUrl, { waitUntil: 'networkidle' });
+  assert.equal(await page.locator('.photo-fallback').textContent(), 'JL');
+  assert.equal(await page.locator('.paper-item').count(), 3);
+  assert.deepEqual(page.errors, []);
   await page.close();
 });
