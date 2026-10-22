@@ -70,7 +70,8 @@ test('Chinese content and the language preference survive a reload', async () =>
   assert.match(await page.locator('#education-list').textContent(), /LDS 实验室/);
   assert.match(await page.locator('#publication-soda').textContent(), /短篇论文/);
   assert.equal(await page.locator('#agents-heading').textContent(), '智能体研究与项目');
-  assert.equal(await page.locator('#research-mesa').getByText('详情待补充。').count(), 1);
+  assert.match(await page.locator('#research-swe-clar').textContent(), /需求澄清与代码能力/);
+  assert.match(await page.locator('#research-mesa').textContent(), /Matter Agents.*长程记忆/);
   assert.equal(await page.evaluate(() => localStorage.getItem('lang')), 'zh');
   await page.reload({ waitUntil: 'networkidle' });
   assert.equal(await page.title(), '李嘉磊 · 学术主页');
@@ -81,7 +82,7 @@ test('Chinese content and the language preference survive a reload', async () =>
   await page.close();
 });
 
-test('agent work leads the page with real project links and two reserved research entries', async () => {
+test('agent work leads the page with real project links and both research titles', async () => {
   const page = await newPage({ reducedMotion: 'reduce' });
   assert.match(await page.locator('#intro-heading').textContent(), /AI agents/);
   assert.doesNotMatch(await page.locator('#intro-heading').textContent(), /recommendation/i);
@@ -89,10 +90,14 @@ test('agent work leads the page with real project links and two reserved researc
   assert.equal(await project.getByRole('link', { name: 'Source code', exact: true }).getAttribute('href'), 'https://github.com/Jialei-03/open-research-agent');
   assert.equal(await project.getByRole('link', { name: 'Paper reader', exact: true }).getAttribute('href'), 'https://papers.dougao.online');
   for (const name of ['SWE-Clar', 'MESA']) {
-    const research = page.getByRole('article').filter({ has: page.getByRole('heading', { name, exact: true }) });
-    assert.equal(await research.getByText('Details forthcoming.', { exact: true }).count(), 1);
-    assert.equal(await research.getByRole('link').count(), 0, 'Reserved research has no invented paper or code links');
+    const research = page.getByRole('article').filter({ has: page.getByRole('heading', { name: new RegExp(`^${name}:`) }) });
+    assert.equal(await research.count(), 1);
+    assert.equal(await research.getByRole('link').count(), 0, 'Research has no invented paper or code links');
   }
+  assert.equal(await page.locator('#research-swe-clar-title').textContent(), 'SWE-Clar: Can Coding Agents Clarify Incomplete Client Requirements and Deliver Greenfield Software?');
+  assert.equal(await page.locator('#research-mesa-title').textContent(), 'MESA: Long-Horizon Agent Memory as an Emergent Society of Matter Agents');
+  assert.equal(await page.locator('#research-swe-clar').getByText('Benchmark', { exact: true }).count(), 1);
+  assert.equal(await page.getByText('Details forthcoming.', { exact: true }).count(), 0);
   assert.equal(await page.locator('#agents').evaluate(element => Boolean(element.compareDocumentPosition(document.querySelector('#publications')) & Node.DOCUMENT_POSITION_FOLLOWING)), true);
   await page.getByRole('navigation').getByRole('link', { name: 'Agents', exact: true }).click();
   assert.equal(new URL(page.url()).hash, '#agents');
@@ -166,8 +171,8 @@ test('the pre-rendered page includes identity, papers and contact without JavaSc
   assert.equal(await page.locator('#profile-name').textContent(), 'Jialei Li');
   assert.equal(await page.locator('.paper-item').count(), 3);
   assert.equal(await page.getByRole('heading', { name: 'Open-Research-Agent', exact: true }).count(), 1);
-  assert.equal(await page.getByRole('heading', { name: 'SWE-Clar', exact: true }).count(), 1);
-  assert.equal(await page.getByRole('heading', { name: 'MESA', exact: true }).count(), 1);
+  assert.equal(await page.getByRole('heading', { name: /^SWE-Clar:/ }).count(), 1);
+  assert.equal(await page.getByRole('heading', { name: /^MESA:/ }).count(), 1);
   assert.match(await page.locator('#publication-soda').textContent(), /RecSys 2026/);
   assert.equal(await page.getByRole('link', { name: 'Email me' }).getAttribute('href'), 'mailto:lijialei.cn@gmail.com');
   assert.ok(await page.locator('#avatar').evaluate(image => image.complete && image.naturalWidth > 0));

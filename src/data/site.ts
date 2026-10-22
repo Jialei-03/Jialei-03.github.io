@@ -24,10 +24,28 @@ export const profile = {
   updatedAt: "2026.10",
 }
 
-// Reserved research entries. Add the abstracts here when they are ready to share.
+// Research titles and scope supplied by the author. Links can be added when public.
 export const researchProjects = [
-  { id: "swe-clar", name: "SWE-Clar", summary: { en: "", zh: "" } },
-  { id: "mesa", name: "MESA", summary: { en: "", zh: "" } },
+  {
+    id: "swe-clar",
+    name: "SWE-Clar",
+    title: "SWE-Clar: Can Coding Agents Clarify Incomplete Client Requirements and Deliver Greenfield Software?",
+    kind: { en: "Benchmark", zh: "评测基准" },
+    summary: {
+      en: "A benchmark evaluating coding agents' ability to clarify incomplete client requirements and deliver software from scratch.",
+      zh: "聚焦编码智能体的需求澄清与代码能力，评估其能否澄清不完整的客户需求，并从零交付软件。",
+    },
+  },
+  {
+    id: "mesa",
+    name: "MESA",
+    title: "MESA: Long-Horizon Agent Memory as an Emergent Society of Matter Agents",
+    kind: { en: "Agent memory", zh: "智能体记忆" },
+    summary: {
+      en: "Long-horizon agent memory modeled as an emergent society of Matter Agents.",
+      zh: "以 Matter Agents 的涌现社会为视角，探索智能体的长程记忆。",
+    },
+  },
 ]
 
 // Description and links verified against the public repository README.
