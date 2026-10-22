@@ -18,6 +18,8 @@ pnpm dev
 统一编辑 `src/data/site.ts`：
 
 - `profile`：姓名、联系方式、简介和研究方向
+- `openResearchAgent`：Open-Research-Agent 的介绍、能力与源码 / 在线论文阅读入口
+- `researchProjects`：SWE-Clar、MESA 的研究位置；摘要为空时显示“详情待补充”
 - `publications`：论文、作者、会议类型、配图及论文/PDF/代码链接
 - `news`：中英文动态
 - `education`：教育经历
@@ -46,7 +48,7 @@ pnpm test
 
 ## 设计与组件
 
-以清晰的字体层级、侧栏个人资料和研究内容为主。深浅色使用相同语义变量，支持系统主题、手动切换及减少动态效果的偏好。
+以 Agents 和大语言模型作为首屏方向，依次展示开源项目、预留研究条目与现有论文。SODA、UniGRec 和 ISCCN 论文保留完整信息，第一作者工作单独标注。深浅色使用相同语义变量，支持系统主题、手动切换及减少动态效果的偏好。
 
 组件通过 [shadcn/ui](https://ui.shadcn.com/) 的官方 CLI 安装并定制；[awesome-shadcn-ui](https://github.com/birobirobiro/awesome-shadcn-ui) 用于检索社区组件方案。它是资源目录，项目无需安装整份目录或未使用的组件库。
 

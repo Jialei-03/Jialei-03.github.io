@@ -1,7 +1,6 @@
 import { IconArrowUpRight, IconBrandGithub, IconFileText } from "@tabler/icons-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { type Language, type Publication as Paper } from "@/data/site"
 
 function Authors({ authors }: { authors: string[] }) {
@@ -11,9 +10,9 @@ function Authors({ authors }: { authors: string[] }) {
   </span>)}</span>
 }
 
-function PaperLinks({ paper, lang, featured }: { paper: Paper; lang: Language; featured: boolean }) {
+function PaperLinks({ paper, lang }: { paper: Paper; lang: Language }) {
   return <div className="paper-links">
-    <Button asChild variant={featured ? "default" : "outline"} size="sm">
+    <Button asChild variant="outline" size="sm">
       <a href={paper.paper} target="_blank" rel="noreferrer">{lang === "en" ? "Paper" : "论文"}<IconArrowUpRight data-icon="inline-end" /></a>
     </Button>
     <Button asChild variant="ghost" size="sm">
@@ -26,35 +25,25 @@ function PaperLinks({ paper, lang, featured }: { paper: Paper; lang: Language; f
 }
 
 export function Publication({ paper, lang }: { paper: Paper; lang: Language }) {
-  const featured = paper.id === "soda"
   const image = <a className="paper-visual" href={paper.pdf} target="_blank" rel="noreferrer" aria-label={`${paper.name} PDF`}>
     <img src={paper.image} alt={paper.imageAlt} loading="lazy" width="480" height="240" />
   </a>
   const metadata = <div className="paper-metadata">
-    <Badge variant={featured ? "default" : "secondary"}>{paper.venue}</Badge>
+    {paper.id === "soda" && <span className="paper-alias">SODA</span>}
+    <Badge variant={paper.id === "soda" ? "default" : "secondary"}>{paper.venue}</Badge>
     <span>{paper.format[lang]}</span>
+    {paper.authors[0] === "Jialei Li" && <Badge variant="outline">{lang === "en" ? "First author" : "第一作者"}</Badge>}
   </div>
   return <article id={`publication-${paper.id}`} className="paper-item" aria-labelledby={`title-${paper.id}`} data-paper-type={paper.type}>
-    {featured ? <Card className="featured-paper">
-      <CardHeader>
-        {metadata}
-        <p className="project-name">{paper.name}</p>
-        <CardTitle><h3 id={`title-${paper.id}`}><a href={paper.paper} target="_blank" rel="noreferrer">{paper.title}</a></h3></CardTitle>
-        <CardDescription><Authors authors={paper.authors} /></CardDescription>
-      </CardHeader>
-      <CardContent>
-        {image}
-        {paper.description && <p className="paper-description">{paper.description[lang]}</p>}
-      </CardContent>
-      <CardFooter><PaperLinks paper={paper} lang={lang} featured /></CardFooter>
-    </Card> : <div className="standard-paper">
+    <div className="standard-paper">
       {image}
       <div className="paper-copy">
         {metadata}
         <h3 id={`title-${paper.id}`}><a href={paper.paper} target="_blank" rel="noreferrer">{paper.title}</a></h3>
         <p><Authors authors={paper.authors} /></p>
-        <PaperLinks paper={paper} lang={lang} featured={false} />
+        {paper.description && <p className="paper-description">{paper.description[lang]}</p>}
+        <PaperLinks paper={paper} lang={lang} />
       </div>
-    </div>}
+    </div>
   </article>
 }

@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Profile } from "@/components/profile"
+import { AgentWork } from "@/components/agent-work"
 import { Publication } from "@/components/publication"
 import { SiteControls, useLanguage } from "@/components/site-controls"
 import { education, news, profile, publications } from "@/data/site"
@@ -16,16 +17,16 @@ type Filter = "all" | "conference" | "preprint"
 
 const copy = {
   en: {
-    skip: "Skip to main content", research: "Research", about: "About", news: "News",
-    eyebrow: "Research & engineering", headlineStart: "Language, agents &", headlineEnd: "recommendation.",
-    intro: "Exploring AI agents, large language models, and how intelligent systems connect people with the right information.",
+    skip: "Skip to main content", agents: "Agents", papers: "Papers", about: "About", news: "News",
+    eyebrow: "AI research & open source", headlineStart: "AI agents.", headlineEnd: "Language models.",
+    intro: "Exploring AI agents for research, from planning and experimentation to verifiable evidence.",
     publications: "Selected publications", all: "All work", conference: "Conference", preprint: "Preprints",
     education: "Education", updated: "Updated", top: "Back to top",
   },
   zh: {
-    skip: "跳到主内容", research: "研究", about: "关于", news: "动态",
-    eyebrow: "研究与工程", headlineStart: "语言、智能体", headlineEnd: "与推荐系统。",
-    intro: "探索智能体与大语言模型，以及智能系统如何连接人与合适的信息。",
+    skip: "跳到主内容", agents: "研究", papers: "论文", about: "关于", news: "动态",
+    eyebrow: "人工智能研究与开源", headlineStart: "智能体", headlineEnd: "与大语言模型。",
+    intro: "探索面向科研的智能体，从研究规划、实验执行，到可核验的证据。",
     publications: "精选论文", all: "全部成果", conference: "会议论文", preprint: "预印本",
     education: "教育经历", updated: "更新于", top: "返回顶部",
   },
@@ -35,10 +36,10 @@ export default function App() {
   const { lang, toggleLanguage } = useLanguage()
   const t = copy[lang]
   const [filter, setFilter] = useState<Filter>("all")
-  const [activeSection, setActiveSection] = useState("publications")
+  const [activeSection, setActiveSection] = useState("agents")
 
   useEffect(() => {
-    const sections = ["publications", "about", "news"]
+    const sections = ["agents", "publications", "about"]
     const observer = new IntersectionObserver((entries) => {
       const visible = entries.filter((entry) => entry.isIntersecting)
       if (visible.length) setActiveSection(visible[0].target.id)
@@ -57,9 +58,9 @@ export default function App() {
         <a className="brand" href="#top" aria-label={`jl. Jialei Li, ${t.top}`}>jl<span aria-hidden="true">.</span></a>
         <nav className="top-nav" aria-label={lang === "en" ? "Primary navigation" : "主导航"}>
           {[
-            { id: "publications", label: t.research },
+            { id: "agents", label: t.agents },
+            { id: "publications", label: t.papers },
             { id: "about", label: t.about },
-            { id: "news", label: t.news },
           ].map((item) => <a key={item.id} href={`#${item.id}`} className={cn(activeSection === item.id && "active")} aria-current={activeSection === item.id ? "location" : undefined}>{item.label}</a>)}
         </nav>
         <SiteControls lang={lang} toggleLanguage={toggleLanguage} />
@@ -71,9 +72,13 @@ export default function App() {
       <main id="main" tabIndex={-1}>
         <section className="intro" aria-labelledby="intro-heading">
           <p className="intro-eyebrow">{t.eyebrow}</p>
-          <h2 id="intro-heading"><span>{t.headlineStart}</span><span className="accent-text">{t.headlineEnd}</span></h2>
+          <h2 id="intro-heading"><span className="accent-text">{t.headlineStart}</span><span>{t.headlineEnd}</span></h2>
           <p className="intro-copy">{t.intro}</p>
         </section>
+
+        <AgentWork lang={lang} />
+
+        <Separator className="section-separator" />
 
         <section id="publications" className="content-section publications-section" aria-labelledby="publications-heading">
           <h2 id="publications-heading">{t.publications}</h2>

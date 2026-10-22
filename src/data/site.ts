@@ -13,15 +13,37 @@ export const profile = {
   avatar: "/assets/github-avatar.webp",
   avatarSmall: "/assets/github-avatar-small.webp",
   summary: {
-    en: "I am a master's student in Big Data Technology and Engineering at the School of Artificial Intelligence and Data Science, University of Science and Technology of China. My research interests include AI agents, large language models, and recommender systems.",
-    zh: "我目前是中国科学技术大学人工智能与数据科学学院大数据技术与工程专业硕士生，研究方向包括智能体、大语言模型与推荐系统。",
+    en: "I am a master's student in Big Data Technology and Engineering at the School of Artificial Intelligence and Data Science, University of Science and Technology of China. I focus on AI agents and large language models, and build open-source tools for research. My previous work explores generative recommendation.",
+    zh: "我目前是中国科学技术大学人工智能与数据科学学院大数据技术与工程专业硕士生，主要关注智能体与大语言模型，并开发面向科研的开源工具。此前的研究聚焦于生成式推荐。",
   },
   interests: [
     { en: "AI Agents", zh: "智能体" },
     { en: "Large Language Models", zh: "大语言模型" },
-    { en: "Recommender Systems", zh: "推荐系统" },
+    { en: "Generative Recommendation", zh: "生成式推荐" },
   ],
   updatedAt: "2026.10",
+}
+
+// Reserved research entries. Add the abstracts here when they are ready to share.
+export const researchProjects = [
+  { id: "swe-clar", name: "SWE-Clar", summary: { en: "", zh: "" } },
+  { id: "mesa", name: "MESA", summary: { en: "", zh: "" } },
+]
+
+// Description and links verified against the public repository README.
+export const openResearchAgent = {
+  name: "Open-Research-Agent",
+  summary: {
+    en: "An open-source research agent for planning experiments, checking evidence, and reading papers with source-linked guides.",
+    zh: "面向科研的开源智能体，支持研究规划、实验执行、证据核验，以及带原文引用的论文导读。",
+  },
+  capabilities: [
+    { en: "Persistent research map", zh: "持久化研究地图" },
+    { en: "Evidence checks", zh: "证据核验" },
+    { en: "Paper reading", zh: "论文阅读" },
+  ],
+  repository: "https://github.com/Jialei-03/open-research-agent",
+  reader: "https://papers.dougao.online",
 }
 
 export type Publication = {
@@ -71,6 +93,10 @@ export const publications: Publication[] = [
     year: "2026",
     type: "preprint",
     format: { en: "Preprint", zh: "预印本" },
+    description: {
+      en: "Unifies soft identifiers and generative recommendation for end-to-end optimization.",
+      zh: "统一软标识符与生成式推荐，实现端到端优化。",
+    },
     paper: "https://arxiv.org/abs/2601.17438",
     pdf: "https://arxiv.org/pdf/2601.17438",
     code: "https://github.com/Jialei-03/UniGRec",
@@ -86,6 +112,10 @@ export const publications: Publication[] = [
     year: "2025",
     type: "conference",
     format: { en: "Conference Paper", zh: "会议论文" },
+    description: {
+      en: "Combines CEEMDAN, PatchTST, and Transformer for transformer oil temperature prediction.",
+      zh: "结合 CEEMDAN、PatchTST 与 Transformer 进行变压器油温预测。",
+    },
     paper: "https://doi.org/10.1145/3732945.3732960",
     pdf: "https://dl.acm.org/doi/pdf/10.1145/3732945.3732960",
     image: "/assets/isccn-framework.webp",
