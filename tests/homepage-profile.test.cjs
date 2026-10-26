@@ -43,12 +43,21 @@ async function assertHealthy(page) {
   assert.equal(await page.locator('img').evaluateAll(images => images.every(image => image.complete && image.naturalWidth > 0)), true, 'All visible images load');
 }
 
-test('the new homepage has an English identity and the current RecSys publication', async () => {
+test('the homepage lists the released SWE-Clar preprint alongside existing publications', async () => {
   const page = await newPage();
   assert.equal(await page.title(), 'Jialei Li · Academic Homepage');
   assert.equal(await page.locator('#profile-name').textContent(), 'Jialei Li');
   assert.match(await page.locator('#bio').textContent(), /master's student in Big Data Technology and Engineering/);
-  assert.equal(await page.locator('.paper-item').count(), 3);
+  assert.equal(await page.locator('.paper-item').count(), 4);
+  assert.equal(await page.locator('.paper-item').first().getAttribute('id'), 'publication-swe-clar');
+  const swe = page.locator('#publication-swe-clar');
+  assert.match(await swe.textContent(), /arXiv:2610\.31854/);
+  assert.equal(await swe.getByText('Preprint', { exact: true }).count(), 1);
+  assert.equal(await swe.getByText('First author', { exact: true }).count(), 1);
+  assert.equal(await swe.locator('.author-list strong').textContent(), 'Jialei Li');
+  assert.equal(await swe.getByRole('link', { name: 'Paper', exact: true }).getAttribute('href'), 'https://arxiv.org/abs/2610.31854');
+  assert.equal(await swe.getByRole('link', { name: 'PDF', exact: true }).getAttribute('href'), 'https://arxiv.org/pdf/2610.31854');
+  assert.equal(await swe.getByRole('link', { name: 'Code', exact: true }).getAttribute('href'), 'https://github.com/upwork/SWE-Clar');
   const soda = page.locator('#publication-soda');
   assert.match(await soda.textContent(), /RecSys 2026/);
   assert.match(await soda.textContent(), /Short Paper/);
@@ -90,9 +99,15 @@ test('agent work leads the page with real project links and both research titles
   assert.equal(await project.getByRole('link', { name: 'Source code', exact: true }).getAttribute('href'), 'https://github.com/Jialei-03/open-research-agent');
   assert.equal(await project.getByRole('link', { name: 'Paper reader', exact: true }).getAttribute('href'), 'https://papers.dougao.online');
   for (const name of ['SWE-Clar', 'MESA']) {
-    const research = page.getByRole('article').filter({ has: page.getByRole('heading', { name: new RegExp(`^${name}:`) }) });
+    const research = page.locator('.research-projects').getByRole('article').filter({ has: page.getByRole('heading', { name: new RegExp(`^${name}:`) }) });
     assert.equal(await research.count(), 1);
-    assert.equal(await research.getByRole('link').count(), 0, 'Research has no invented paper or code links');
+    if (name === 'MESA') {
+      assert.equal(await research.getByRole('link').count(), 0, 'Unreleased research has no invented links');
+    } else {
+      assert.equal(await research.getByRole('link', { name: 'Paper', exact: true }).getAttribute('href'), 'https://arxiv.org/abs/2610.31854');
+      assert.equal(await research.getByRole('link', { name: 'PDF', exact: true }).getAttribute('href'), 'https://arxiv.org/pdf/2610.31854');
+      assert.equal(await research.getByRole('link', { name: 'Code', exact: true }).getAttribute('href'), 'https://github.com/upwork/SWE-Clar');
+    }
   }
   assert.equal(await page.locator('#research-swe-clar-title').textContent(), 'SWE-Clar: Can Coding Agents Clarify Incomplete Client Requirements and Deliver Greenfield Software?');
   assert.equal(await page.locator('#research-mesa-title').textContent(), 'MESA: Long-Horizon Agent Memory as an Emergent Society of Matter Agents');
@@ -105,7 +120,7 @@ test('agent work leads the page with real project links and both research titles
   assert.ok(top >= 64 && top < 200, 'Agent section remains visible below the header');
   await page.getByRole('navigation').getByRole('link', { name: 'Papers', exact: true }).click();
   assert.equal(new URL(page.url()).hash, '#publications');
-  assert.equal(await page.locator('.paper-item').count(), 3, 'All existing publications are retained');
+  assert.equal(await page.locator('.paper-item').count(), 4, 'The new preprint and all existing publications are retained');
   assert.deepEqual(page.errors, []);
   await page.close();
 });
@@ -113,12 +128,12 @@ test('agent work leads the page with real project links and both research titles
 test('publication filters work with both pointer and keyboard', async () => {
   const page = await newPage();
   await page.getByRole('tab', { name: 'Preprints' }).click();
-  assert.equal(await page.locator('.paper-item').count(), 1);
-  assert.equal(await page.locator('.paper-item').getAttribute('data-paper-type'), 'preprint');
+  assert.equal(await page.locator('.paper-item').count(), 2);
+  assert.equal(await page.locator('.paper-item').evaluateAll(papers => papers.every(paper => paper.dataset.paperType === 'preprint')), true);
   await page.getByRole('tab', { name: 'Conference' }).click();
   assert.equal(await page.locator('.paper-item').count(), 2);
   await page.getByRole('tab', { name: 'All work' }).click();
-  assert.equal(await page.locator('.paper-item').count(), 3);
+  assert.equal(await page.locator('.paper-item').count(), 4);
   await page.getByRole('tab', { name: 'All work' }).focus();
   await page.keyboard.press('ArrowRight');
   await page.waitForFunction(() => document.querySelectorAll('.paper-item').length === 2);
@@ -127,14 +142,19 @@ test('publication filters work with both pointer and keyboard', async () => {
   await page.close();
 });
 
-test('the SODA news anchor restores a filtered-out publication', async () => {
+test('news anchors restore SWE-Clar and SODA after their publication types are filtered out', async () => {
   const page = await newPage({ reducedMotion: 'reduce' });
-  await page.getByRole('tab', { name: 'Preprints' }).click();
-  await page.getByRole('link', { name: /SODA appears at RecSys/ }).click();
-  assert.equal(await page.locator('.paper-item').count(), 3);
-  assert.equal(new URL(page.url()).hash, '#publication-soda');
-  const top = await page.locator('#publication-soda').evaluate(element => element.getBoundingClientRect().top);
-  assert.ok(top >= 64 && top < 200, `SODA is visible below the sticky header (${top}px)`);
+  for (const item of [
+    { filter: 'Conference', name: /SWE-Clar preprint is now available/, id: 'swe-clar' },
+    { filter: 'Preprints', name: /SODA appears at RecSys/, id: 'soda' },
+  ]) {
+    await page.getByRole('tab', { name: item.filter }).click();
+    await page.getByRole('link', { name: item.name }).click();
+    assert.equal(await page.locator('.paper-item').count(), 4);
+    assert.equal(new URL(page.url()).hash, `#publication-${item.id}`);
+    const top = await page.locator(`#publication-${item.id}`).evaluate(element => element.getBoundingClientRect().top);
+    assert.ok(top >= 64 && top < 200, `${item.id} is visible below the sticky header (${top}px)`);
+  }
   assert.deepEqual(page.errors, []);
   await page.close();
 });
@@ -169,9 +189,9 @@ test('both languages fit mobile, tablet and desktop without horizontal scrolling
 test('the pre-rendered page includes identity, papers and contact without JavaScript', async () => {
   const page = await newPage({ javaScriptEnabled: false });
   assert.equal(await page.locator('#profile-name').textContent(), 'Jialei Li');
-  assert.equal(await page.locator('.paper-item').count(), 3);
+  assert.equal(await page.locator('.paper-item').count(), 4);
   assert.equal(await page.getByRole('heading', { name: 'Open-Research-Agent', exact: true }).count(), 1);
-  assert.equal(await page.getByRole('heading', { name: /^SWE-Clar:/ }).count(), 1);
+  assert.equal(await page.getByRole('heading', { name: /^SWE-Clar:/ }).count(), 2);
   assert.equal(await page.getByRole('heading', { name: /^MESA:/ }).count(), 1);
   assert.match(await page.locator('#publication-soda').textContent(), /RecSys 2026/);
   assert.equal(await page.getByRole('link', { name: 'Email me' }).getAttribute('href'), 'mailto:lijialei.cn@gmail.com');
@@ -186,7 +206,7 @@ test('an unavailable portrait has a visible fallback without breaking the page',
   await page.route('**/assets/github-avatar*.webp', route => route.abort());
   await page.goto(baseUrl, { waitUntil: 'networkidle' });
   assert.equal(await page.locator('.photo-fallback').textContent(), 'JL');
-  assert.equal(await page.locator('.paper-item').count(), 3);
+  assert.equal(await page.locator('.paper-item').count(), 4);
   assert.deepEqual(page.errors, []);
   await page.close();
 });

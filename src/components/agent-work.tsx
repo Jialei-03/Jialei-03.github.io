@@ -2,7 +2,8 @@ import { IconArrowUpRight, IconBrandGithub } from "@tabler/icons-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { openResearchAgent as project, researchProjects, type Language } from "@/data/site"
+import { PaperLinks } from "@/components/publication"
+import { openResearchAgent as project, publications, researchProjects, type Language } from "@/data/site"
 
 export function AgentWork({ lang }: { lang: Language }) {
   const t = lang === "en"
@@ -30,11 +31,18 @@ export function AgentWork({ lang }: { lang: Language }) {
       </Card>
     </article>
     <div className="research-projects">
-      {researchProjects.map((research) => <article className="research-project" id={`research-${research.id}`} key={research.id} aria-labelledby={`research-${research.id}-title`}>
-        <Badge variant="outline">{research.kind[lang]}</Badge>
-        <h3 id={`research-${research.id}-title`}>{research.title}</h3>
-        <p>{research.summary[lang]}</p>
-      </article>)}
+      {researchProjects.map((research) => {
+        const paper = publications.find((item) => item.id === research.publicationId)
+        return <article className="research-project" id={`research-${research.id}`} key={research.id} aria-labelledby={`research-${research.id}-title`}>
+          <div className="research-metadata">
+            <Badge variant="outline">{research.kind[lang]}</Badge>
+            {paper && <Badge variant="secondary">{paper.venue}</Badge>}
+          </div>
+          <h3 id={`research-${research.id}-title`}>{paper ? <a href={paper.paper} target="_blank" rel="noreferrer">{research.title}</a> : research.title}</h3>
+          <p>{research.summary[lang]}</p>
+          {paper && <PaperLinks paper={paper} lang={lang} />}
+        </article>
+      })}
     </div>
   </section>
 }

@@ -10,7 +10,7 @@ function Authors({ authors }: { authors: string[] }) {
   </span>)}</span>
 }
 
-function PaperLinks({ paper, lang }: { paper: Paper; lang: Language }) {
+export function PaperLinks({ paper, lang }: { paper: Paper; lang: Language }) {
   return <div className="paper-links">
     <Button asChild variant="outline" size="sm">
       <a href={paper.paper} target="_blank" rel="noreferrer">{lang === "en" ? "Paper" : "论文"}<IconArrowUpRight data-icon="inline-end" /></a>

@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url"
 const tasks = [
   ["github-avatar.jpg", "github-avatar.webp", 460, 86],
   ["github-avatar.jpg", "github-avatar-small.webp", 256, 84],
+  ["swe-clar-framework.svg", "swe-clar-framework.webp", 880, 90],
   ["unigrec-framework.png", "unigrec-framework.webp", 880, 90],
   ["isccn-framework.png", "isccn-framework.webp", 306, 90],
 ]

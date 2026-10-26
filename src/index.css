@@ -149,8 +149,11 @@ section, article[id], #top, #main { scroll-margin-top: 100px; }
 .project-actions { flex-wrap: wrap; gap: 10px; }
 .research-projects { display: flex; flex-direction: column; gap: 26px; margin-top: 28px; }
 .research-project { min-width: 0; }
+.research-metadata { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .research-project h3 { margin: 10px 0 8px; font-size: 16px; font-weight: 550; line-height: 1.55; letter-spacing: -.015em; overflow-wrap: anywhere; }
+.research-project h3 a:hover { color: var(--primary); }
 .research-project p { margin: 0; color: var(--muted-foreground); font-size: 13px; line-height: 1.8; }
+.research-project .paper-links { margin-top: 12px; }
 .publications-section > h2 { margin-bottom: 15px; }
 .publications-section [data-slot="tabs"] { gap: 22px; }
 .publications-section [data-slot="tabs-list"] { width: fit-content; }

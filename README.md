@@ -19,7 +19,7 @@ pnpm dev
 
 - `profile`：姓名、联系方式、简介和研究方向
 - `openResearchAgent`：Open-Research-Agent 的介绍、能力与源码 / 在线论文阅读入口
-- `researchProjects`：SWE-Clar、MESA 的完整标题、研究类别与中英文简介
+- `researchProjects`：SWE-Clar、MESA 的完整标题、研究类别与中英文简介；`publicationId` 关联已公开论文，复用论文 / PDF / 代码入口
 - `publications`：论文、作者、会议类型、配图及论文/PDF/代码链接
 - `news`：中英文动态
 - `education`：教育经历
@@ -29,6 +29,8 @@ pnpm dev
 `public/assets/` 中的图片用于发布。`assets/` 保留素材源文件，便于后续调整。头像取自 [Jialei-03 的 GitHub 账号](https://github.com/Jialei-03)，使用 256px / 460px 的响应式 WebP，浏览器图标也由该头像生成。更换头像源文件 `assets/github-avatar.jpg` 后运行 `pnpm optimize:assets`，即可重新生成发布版本。论文配图也做了压缩。
 
 SODA 按 [arXiv 最新版](https://arxiv.org/abs/2603.00700) 和[官方仓库](https://github.com/freyasa/SODA)列为 RecSys 2026 Short Paper，使用正式标题 **Distribution-Level Contrastive Supervision for Generative Recommendation**。SODA 配图取自论文 Figure 1（CC BY），来源已写入数据文件。
+
+SWE-Clar 按 [arXiv:2610.31854](https://arxiv.org/abs/2610.31854) 列为第一作者预印本，代码与数据入口为[官方仓库](https://github.com/upwork/SWE-Clar)。配图取自论文 Figure 2（CC BY 4.0），发布图片由原始 SVG 转为 WebP。
 
 ## 构建和检查
 
@@ -48,7 +50,7 @@ pnpm test
 
 ## 设计与组件
 
-以 Agents 和大语言模型作为首屏方向，依次展示开源项目、研究条目与现有论文。SWE-Clar 和 MESA 的标题与范围由作者提供，按需求澄清与代码能力评测、长程智能体记忆分别介绍。SODA、UniGRec 和 ISCCN 论文保留完整信息，第一作者工作单独标注。深浅色使用相同语义变量，支持系统主题、手动切换及减少动态效果的偏好。
+以 Agents 和大语言模型作为首屏方向，依次展示开源项目、研究条目与论文。SWE-Clar 和 MESA 按需求澄清与代码能力评测、长程智能体记忆分别介绍。公开的 SWE-Clar 同时列入论文列表首位，并新增发布动态；SODA、UniGRec 和 ISCCN 论文保留完整信息，第一作者工作单独标注。深浅色使用相同语义变量，支持系统主题、手动切换及减少动态效果的偏好。
 
 组件通过 [shadcn/ui](https://ui.shadcn.com/) 的官方 CLI 安装并定制；[awesome-shadcn-ui](https://github.com/birobirobiro/awesome-shadcn-ui) 用于检索社区组件方案。它是资源目录，项目无需安装整份目录或未使用的组件库。
 

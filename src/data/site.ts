@@ -24,13 +24,23 @@ export const profile = {
   updatedAt: "2026.10",
 }
 
-// Research titles and scope supplied by the author. Links can be added when public.
-export const researchProjects = [
+type ResearchProject = {
+  id: string
+  name: string
+  title: string
+  kind: Localized
+  summary: Localized
+  publicationId?: string
+}
+
+// Published entries share their paper and code links with the publication list.
+export const researchProjects: ResearchProject[] = [
   {
     id: "swe-clar",
     name: "SWE-Clar",
     title: "SWE-Clar: Can Coding Agents Clarify Incomplete Client Requirements and Deliver Greenfield Software?",
     kind: { en: "Benchmark", zh: "评测基准" },
+    publicationId: "swe-clar",
     summary: {
       en: "A benchmark evaluating coding agents' ability to clarify incomplete client requirements and deliver software from scratch.",
       zh: "聚焦编码智能体的需求澄清与代码能力，评估其能否澄清不完整的客户需求，并从零交付软件。",
@@ -82,6 +92,26 @@ export type Publication = {
 }
 
 export const publications: Publication[] = [
+  {
+    id: "swe-clar",
+    name: "SWE-Clar",
+    title: "SWE-Clar: Can Coding Agents Clarify Incomplete Client Requirements and Deliver Greenfield Software?",
+    authors: ["Jialei Li", "Dingxian Wang", "Xiaoyan Zhao", "Yimeng Bai", "Xuanyi Zhu", "Yang Zhang", "Chao Yin", "Wentao Shi", "Ganesh Prabhu", "Karthik Gomadam Rajagopal", "Brett Levert", "Darvin Yi", "Andrew Rabinovich", "Zhao Chen"],
+    venue: "arXiv:2610.31854",
+    year: "2026",
+    type: "preprint",
+    format: { en: "Preprint", zh: "预印本" },
+    description: {
+      en: "100 greenfield software tasks grounded in real client commissions and 512 requirement questions for evaluating clarification and independent software delivery.",
+      zh: "基于真实项目构建 100 个新建软件任务与 512 个需求问题，评估需求澄清和独立软件交付能力。",
+    },
+    paper: "https://arxiv.org/abs/2610.31854",
+    pdf: "https://arxiv.org/pdf/2610.31854",
+    code: "https://github.com/upwork/SWE-Clar",
+    // Figure 2 from https://arxiv.org/html/2610.31854v1 (CC BY 4.0).
+    image: "/assets/swe-clar-framework.webp",
+    imageAlt: "SWE-Clar benchmark workflow with requirement clarification and independent implementation and clarification evaluation branches",
+  },
   {
     id: "soda",
     name: "SODA",
@@ -142,6 +172,11 @@ export const publications: Publication[] = [
 ]
 
 export const news = [
+  {
+    date: "2026.10",
+    text: { en: "SWE-Clar preprint is now available on arXiv, with code and data released.", zh: "SWE-Clar 预印本已发布于 arXiv，代码与数据同步开源。" },
+    href: "#publication-swe-clar",
+  },
   {
     date: "2026.09",
     text: { en: "SODA appears at RecSys 2026 as a short paper.", zh: "SODA 以 Short Paper 形式发表于 RecSys 2026。" },
