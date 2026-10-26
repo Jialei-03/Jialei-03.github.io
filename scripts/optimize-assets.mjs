@@ -8,6 +8,8 @@ const tasks = [
   ["swe-clar-framework.svg", "swe-clar-framework.webp", 880, 90],
   ["unigrec-framework.png", "unigrec-framework.webp", 880, 90],
   ["isccn-framework.png", "isccn-framework.webp", 306, 90],
+  // Upwork's app icon, from the avatar of its GitHub organization (github.com/upwork).
+  ["upwork-logo.jpg", "upwork-logo.webp", 128, 92],
 ]
 for (const [source, destination, width, quality] of tasks) {
   await sharp(fileURLToPath(new URL(`../assets/${source}`, import.meta.url)))
@@ -22,4 +24,4 @@ for (const [destination, width] of [["favicon.png", 64], ["apple-touch-icon.png"
     .png()
     .toFile(fileURLToPath(new URL(`../public/assets/${destination}`, import.meta.url)))
 }
-console.log("Optimized GitHub avatar, browser icons and publication figures.")
+console.log("Optimized GitHub avatar, browser icons, logos and publication figures.")

@@ -1,53 +1,67 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState, type CSSProperties } from "react"
 import { flushSync } from "react-dom"
-import { IconArrowUpRight, IconArrowUp } from "@tabler/icons-react"
-import { Badge } from "@/components/ui/badge"
+import { IconArrowUp, IconArrowUpRight } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Profile } from "@/components/profile"
-import { AgentWork } from "@/components/agent-work"
 import { Publication } from "@/components/publication"
+import { Background } from "@/components/background"
+import { Projects } from "@/components/projects"
+import { RichText } from "@/components/rich-text"
 import { SiteControls, useLanguage } from "@/components/site-controls"
-import { education, news, profile, publications } from "@/data/site"
-import { cn } from "@/lib/utils"
+import { news, profile, publications } from "@/data/site"
+import { useIndicator, useScrollReveal, withViewTransition } from "@/lib/motion"
 
 type Filter = "all" | "conference" | "preprint"
 
 const copy = {
   en: {
-    skip: "Skip to main content", agents: "Agents", papers: "Papers", about: "About", news: "News",
-    eyebrow: "AI research & open source", headlineStart: "AI agents.", headlineEnd: "Language models.",
-    intro: "Exploring AI agents for research, from planning and experimentation to verifiable evidence.",
-    publications: "Selected publications", all: "All work", conference: "Conference", preprint: "Preprints",
-    education: "Education", updated: "Updated", top: "Back to top",
+    skip: "Skip to main content", top: "Back to top", updated: "Updated",
+    about: "About", news: "News", papers: "Papers", experience: "Experience", projects: "Projects",
+    publications: "Publications", background: "Experience & Education", now: "Now", interests: "Research interests",
+    all: "All work", conference: "Conference", preprint: "Preprints",
   },
   zh: {
-    skip: "跳到主内容", agents: "研究", papers: "论文", about: "关于", news: "动态",
-    eyebrow: "人工智能研究与开源", headlineStart: "智能体", headlineEnd: "与大语言模型。",
-    intro: "探索面向科研的智能体，从研究规划、实验执行，到可核验的证据。",
-    publications: "精选论文", all: "全部成果", conference: "会议论文", preprint: "预印本",
-    education: "教育经历", updated: "更新于", top: "返回顶部",
+    skip: "跳到主内容", top: "返回顶部", updated: "更新于",
+    about: "关于", news: "动态", papers: "论文", experience: "经历", projects: "项目",
+    publications: "论文", background: "经历与教育", now: "近况", interests: "研究兴趣",
+    all: "全部成果", conference: "会议论文", preprint: "预印本",
   },
 }
+
+const sections = [
+  { id: "about", label: "about" },
+  { id: "news", label: "news" },
+  { id: "publications", label: "papers" },
+  { id: "experience", label: "experience" },
+  { id: "projects", label: "projects" },
+] as const
+
+const enter = (order: number) => ({ "--enter": order }) as CSSProperties
 
 export default function App() {
   const { lang, toggleLanguage } = useLanguage()
   const t = copy[lang]
   const [filter, setFilter] = useState<Filter>("all")
-  const [activeSection, setActiveSection] = useState("agents")
+  const [activeSection, setActiveSection] = useState<string | null>(null)
+  const navRef = useRef<HTMLElement>(null)
+  const tabsRef = useRef<HTMLDivElement>(null)
+  const navIndicator = useIndicator(navRef, "a.active", `${activeSection}-${lang}`)
+  const tabIndicator = useIndicator(tabsRef, '[data-state="active"]', `${filter}-${lang}`)
+  // Links into the paper list must not land on a paper hidden by the current filter.
+  const showAllPapers = () => flushSync(() => setFilter("all"))
+  useScrollReveal()
 
   useEffect(() => {
-    const sections = ["agents", "publications", "about"]
     const observer = new IntersectionObserver((entries) => {
       const visible = entries.filter((entry) => entry.isIntersecting)
       if (visible.length) setActiveSection(visible[0].target.id)
-    }, { rootMargin: "-80px 0px -60% 0px", threshold: 0 })
-    sections.forEach((id) => {
+    }, { rootMargin: "-90px 0px -60% 0px", threshold: 0 })
+    for (const { id } of sections) {
       const section = document.getElementById(id)
       if (section) observer.observe(section)
-    })
+    }
     return () => observer.disconnect()
   }, [])
 
@@ -56,38 +70,54 @@ export default function App() {
     <header className="site-header">
       <div className="header-inner">
         <a className="brand" href="#top" aria-label={`jl. Jialei Li, ${t.top}`}>jl<span aria-hidden="true">.</span></a>
-        <nav className="top-nav" aria-label={lang === "en" ? "Primary navigation" : "主导航"}>
-          {[
-            { id: "agents", label: t.agents },
-            { id: "publications", label: t.papers },
-            { id: "about", label: t.about },
-          ].map((item) => <a key={item.id} href={`#${item.id}`} className={cn(activeSection === item.id && "active")} aria-current={activeSection === item.id ? "location" : undefined}>{item.label}</a>)}
+        <nav className="top-nav" ref={navRef} aria-label={lang === "en" ? "Primary navigation" : "主导航"}>
+          {sections.map(({ id, label }) => <a key={id} href={`#${id}`} className={activeSection === id ? "active" : undefined} aria-current={activeSection === id ? "location" : undefined}>{t[label]}</a>)}
+          {navIndicator && <span className="nav-indicator" aria-hidden="true" style={{ transform: `translateX(${navIndicator.left}px)`, width: navIndicator.width }} />}
         </nav>
         <SiteControls lang={lang} toggleLanguage={toggleLanguage} />
       </div>
     </header>
 
     <div className="page-shell" id="top">
-      <Profile lang={lang} />
+      <Profile lang={lang} onNavigate={showAllPapers} />
       <main id="main" tabIndex={-1}>
-        <section className="intro" aria-labelledby="intro-heading">
-          <p className="intro-eyebrow">{t.eyebrow}</p>
-          <h2 id="intro-heading"><span className="accent-text">{t.headlineStart}</span><span>{t.headlineEnd}</span></h2>
-          <p className="intro-copy">{t.intro}</p>
+        <section id="about" className="main-section about-section" aria-labelledby="about-heading">
+          <h2 id="about-heading" className="enter" style={enter(1)}>{t.about}</h2>
+          <div id="bio" className="enter" style={enter(2)}>
+            {profile.bio[lang].map((paragraph, index) => <p key={index}><RichText content={paragraph} onNavigate={showAllPapers} /></p>)}
+          </div>
+          <p className="now-note enter" style={enter(3)}>
+            <span className="now-label"><span className="live-dot" aria-hidden="true" />{t.now}</span>
+            <span><RichText content={profile.now[lang]} onNavigate={showAllPapers} /></span>
+          </p>
+          <ul className="interest-tags enter" style={enter(4)} aria-label={t.interests}>
+            {profile.interests.map((interest) => <li key={interest.en}>{interest[lang]}</li>)}
+          </ul>
         </section>
 
-        <AgentWork lang={lang} />
+        <section id="news" className="main-section" aria-labelledby="news-heading">
+          <h2 id="news-heading" className="enter" style={enter(5)}>{t.news}</h2>
+          <ul className="news-list enter" id="news-list" style={enter(6)}>
+            {news.map((item) => <li key={item.date}>
+              <time dateTime={item.date.replace(".", "-")}>{item.date}</time>
+              <a href={item.href} {...(item.href.startsWith("#") ? { onClick: showAllPapers } : { target: "_blank", rel: "noreferrer" })}>
+                {item.text[lang]}{!item.href.startsWith("#") && <IconArrowUpRight aria-hidden="true" />}
+              </a>
+            </li>)}
+          </ul>
+        </section>
 
-        <Separator className="section-separator" />
-
-        <section id="publications" className="content-section publications-section" aria-labelledby="publications-heading">
-          <h2 id="publications-heading">{t.publications}</h2>
-          <Tabs value={filter} onValueChange={(value) => setFilter(value as Filter)}>
-            <TabsList aria-label={lang === "en" ? "Filter publications" : "筛选论文"}>
-              {(["all", "conference", "preprint"] as const).map((value) => <TabsTrigger value={value} key={value}>
-                {t[value]}<span className="tab-count" aria-hidden="true">{value === "all" ? publications.length : publications.filter((paper) => paper.type === value).length}</span>
-              </TabsTrigger>)}
-            </TabsList>
+        <section id="publications" className="main-section publications-section" aria-labelledby="publications-heading">
+          <Tabs value={filter} onValueChange={(value) => withViewTransition("filter", () => setFilter(value as Filter))}>
+            <div className="section-head" data-reveal="">
+              <h2 id="publications-heading">{t.publications}</h2>
+              <TabsList ref={tabsRef} aria-label={lang === "en" ? "Filter publications" : "筛选论文"} data-indicator={tabIndicator ? "" : undefined}>
+                {tabIndicator && <span className="tab-indicator" aria-hidden="true" style={{ transform: `translateX(${tabIndicator.left}px)`, width: tabIndicator.width }} />}
+                {(["all", "conference", "preprint"] as const).map((value) => <TabsTrigger value={value} key={value}>
+                  {t[value]}<span className="tab-count" aria-hidden="true">{value === "all" ? publications.length : publications.filter((paper) => paper.type === value).length}</span>
+                </TabsTrigger>)}
+              </TabsList>
+            </div>
             {(["all", "conference", "preprint"] as const).map((value) => <TabsContent value={value} key={value}>
               <div className="publication-list" id={value === filter ? "publication-list" : undefined}>
                 {publications.filter((paper) => value === "all" || paper.type === value).map((paper) => <Publication paper={paper} lang={lang} key={paper.id} />)}
@@ -96,51 +126,19 @@ export default function App() {
           </Tabs>
         </section>
 
-        <Separator className="section-separator" />
-
-        <section id="about" className="content-section about-section" aria-labelledby="about-heading">
-          <h2 id="about-heading">{t.about}</h2>
-          <p id="bio">{profile.summary[lang]}</p>
-          <div className="interest-tags" id="interest-inline" aria-label={lang === "en" ? "Research interests" : "研究兴趣"}>
-            {profile.interests.map((interest) => <Badge key={interest.en} variant="outline">{interest[lang]}</Badge>)}
-          </div>
+        <section id="experience" className="main-section" aria-labelledby="experience-heading">
+          <h2 id="experience-heading" data-reveal="">{t.background}</h2>
+          <Background lang={lang} onNavigate={showAllPapers} />
         </section>
 
-        <div className="background-grid">
-          <section id="education" className="content-section" aria-labelledby="education-heading">
-            <h2 id="education-heading">{t.education}</h2>
-            <div className="education-list" id="education-list">
-              {education.map((item) => <article className="education-item" key={item.href}>
-                <div className="school-mark"><img src={item.logo} alt="" loading="lazy" width="60" height="60" /></div>
-                <div>
-                  <p className="education-period">{item.period[lang]}</p>
-                  <h3><a href={item.href} target="_blank" rel="noreferrer">{item.school[lang]}</a></h3>
-                  <p className="education-degree">{item.degree[lang]}</p>
-                  {item.details[lang] && <p className="education-details">{item.details[lang]}</p>}
-                </div>
-              </article>)}
-            </div>
-          </section>
+        <section id="projects" className="main-section" aria-labelledby="projects-heading">
+          <h2 id="projects-heading" data-reveal="">{t.projects}</h2>
+          <Projects lang={lang} />
+        </section>
 
-          <section id="news" className="content-section" aria-labelledby="news-heading">
-            <h2 id="news-heading">{t.news}</h2>
-            <ul className="news-list" id="news-list">
-              {news.map((item) => <li key={item.date}>
-                <time dateTime={item.date.replace(".", "-")}>{item.date}</time>
-                <a href={item.href} {...(item.href.startsWith("#") ? {
-                  onClick: () => flushSync(() => setFilter("all")),
-                } : { target: "_blank", rel: "noreferrer" })}>
-                  {item.text[lang]}<IconArrowUpRight aria-hidden="true" />
-                </a>
-              </li>)}
-            </ul>
-          </section>
-        </div>
-
-        <Separator className="footer-separator" />
         <footer className="site-footer">
           <p>© {new Date().getFullYear()} Jialei Li <span>{t.updated} {profile.updatedAt}</span></p>
-          <Button variant="ghost" size="icon-sm" asChild><a href="#top" aria-label={t.top}><IconArrowUp data-icon="inline-start" /></a></Button>
+          <Button variant="ghost" size="icon" asChild><a href="#top" aria-label={t.top}><IconArrowUp /></a></Button>
         </footer>
       </main>
     </div>

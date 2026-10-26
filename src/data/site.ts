@@ -1,60 +1,95 @@
 export type Language = "en" | "zh"
 export type Localized = { en: string; zh: string }
+// Text with optional inline links; links starting with "#" stay on the page.
+export type Rich = (string | { text: string; href: string })[]
+type LocalizedRich = { en: Rich; zh: Rich }
 
 export const profile = {
   name: { en: "Jialei Li", zh: "李嘉磊" },
   otherName: { en: "李嘉磊", zh: "Jialei Li" },
-  role: { en: "Master's student", zh: "硕士研究生" },
-  affiliation: { en: "University of Science and Technology of China", zh: "中国科学技术大学" },
-  lab: { en: "School of AI & Data Science\nLDS Lab", zh: "人工智能与数据科学学院\nLDS 实验室" },
+  roles: [
+    { title: { en: "Research Intern", zh: "研究实习生" }, place: { en: "Upwork, since Sep 2025", zh: "Upwork，2025 年 9 月至今" }, href: "#experience-upwork" },
+    { title: { en: "M.Sc. Student", zh: "硕士研究生" }, place: { en: "University of Science and Technology of China, LDS Lab", zh: "中国科学技术大学，LDS 实验室" }, href: "#education-ustc" },
+  ],
   email: "lijialei.cn@gmail.com",
   github: "https://github.com/Jialei-03",
   // GitHub profile image: https://avatars.githubusercontent.com/u/184720084?v=4
   avatar: "/assets/github-avatar.webp",
   avatarSmall: "/assets/github-avatar-small.webp",
-  summary: {
-    en: "I am a master's student in Big Data Technology and Engineering at the School of Artificial Intelligence and Data Science, University of Science and Technology of China. I focus on AI agents and large language models, and build open-source tools for research. My previous work explores generative recommendation.",
-    zh: "我目前是中国科学技术大学人工智能与数据科学学院大数据技术与工程专业硕士生，主要关注智能体与大语言模型，并开发面向科研的开源工具。此前的研究聚焦于生成式推荐。",
-  },
+  bio: {
+    en: [
+      ["I am a master's student at the School of Artificial Intelligence and Data Science, ", { text: "University of Science and Technology of China", href: "https://sai.ustc.edu.cn/" }, ", and a research intern at ", { text: "Upwork", href: "#experience-upwork" }, ". I work on AI agents and large language models: whether coding agents can clarify what clients actually want, and how research agents can keep their direction and back claims with evidence."],
+      ["Before agents, I worked on generative recommendation. I also build open-source tools for research, including ", { text: "Open-Research-Agent", href: "#project-open-research-agent" }, "."],
+    ],
+    zh: [
+      ["我是", { text: "中国科学技术大学", href: "https://sai.ustc.edu.cn/" }, "人工智能与数据科学学院的硕士生，也是 ", { text: "Upwork", href: "#experience-upwork" }, " 的研究实习生。我研究智能体与大语言模型：编码智能体能否问清客户真正的需求，科研智能体如何不偏离方向、并用证据支撑结论。"],
+      ["在此之前，我从事生成式推荐研究。我也开发面向科研的开源工具，例如 ", { text: "Open-Research-Agent", href: "#project-open-research-agent" }, "。"],
+    ],
+  } satisfies { en: Rich[]; zh: Rich[] },
+  now: {
+    en: ["First author of ", { text: "SWE-Clar", href: "#publication-swe-clar" }, ", a benchmark for coding agents built from real Upwork client jobs. Looking for research internships on agents and LLMs."],
+    zh: ["以第一作者发布 ", { text: "SWE-Clar", href: "#publication-swe-clar" }, "，一个基于真实 Upwork 客户项目的编码智能体评测基准。正在寻找智能体与大语言模型方向的研究实习。"],
+  } satisfies LocalizedRich,
   interests: [
-    { en: "AI Agents", zh: "智能体" },
-    { en: "Large Language Models", zh: "大语言模型" },
-    { en: "Generative Recommendation", zh: "生成式推荐" },
+    { en: "AI agents", zh: "智能体" },
+    { en: "Large language models", zh: "大语言模型" },
+    { en: "Generative recommendation", zh: "生成式推荐" },
   ],
   updatedAt: "2026.10",
 }
 
-type ResearchProject = {
+type Background = {
   id: string
-  name: string
-  title: string
-  kind: Localized
-  summary: Localized
-  publicationId?: string
+  name: Localized
+  href: string
+  logo: string
+  // Company icons fill their tile; school emblems sit on a white tile.
+  logoFill?: boolean
+  role: Localized
+  period: Localized
+  highlights?: LocalizedRich[]
 }
 
-// Published entries share their paper and code links with the publication list.
-export const researchProjects: ResearchProject[] = [
+// The role title is kept generic. SWE-Clar is built from real Upwork client jobs and released
+// under github.com/upwork; UniGRec and SODA share Upwork co-authors.
+export const experience: Background[] = [
   {
-    id: "swe-clar",
-    name: "SWE-Clar",
-    title: "SWE-Clar: Can Coding Agents Clarify Incomplete Client Requirements and Deliver Greenfield Software?",
-    kind: { en: "Benchmark", zh: "评测基准" },
-    publicationId: "swe-clar",
-    summary: {
-      en: "A benchmark evaluating coding agents' ability to clarify incomplete client requirements and deliver software from scratch.",
-      zh: "聚焦编码智能体的需求澄清与代码能力，评估其能否澄清不完整的客户需求，并从零交付软件。",
-    },
+    id: "experience-upwork",
+    name: { en: "Upwork", zh: "Upwork" },
+    href: "https://www.upwork.com/",
+    logo: "/assets/upwork-logo.webp",
+    logoFill: true,
+    role: { en: "Research Intern", zh: "研究实习生" },
+    period: { en: "2025.09 – Present", zh: "2025.09 – 至今" },
+    highlights: [
+      {
+        en: ["First author of ", { text: "SWE-Clar", href: "#publication-swe-clar" }, ": 100 greenfield software tasks from real Upwork client jobs and 512 clarification questions, used to evaluate nine frontier models."],
+        zh: ["以第一作者完成 ", { text: "SWE-Clar", href: "#publication-swe-clar" }, "：基于真实 Upwork 客户项目构建 100 个新建软件任务与 512 个需求澄清问题，评测了 9 个前沿模型。"],
+      },
+      {
+        en: ["Generative recommendation with ", { text: "UniGRec", href: "#publication-unigrec" }, " (first author) and ", { text: "SODA", href: "#publication-soda" }, " (RecSys 2026)."],
+        zh: ["生成式推荐研究：", { text: "UniGRec", href: "#publication-unigrec" }, "（第一作者）与 ", { text: "SODA", href: "#publication-soda" }, "（RecSys 2026）。"],
+      },
+    ],
+  },
+]
+
+export const education: Background[] = [
+  {
+    id: "education-ustc",
+    name: { en: "University of Science and Technology of China", zh: "中国科学技术大学" },
+    href: "https://sai.ustc.edu.cn/",
+    logo: "/assets/ustc-logo.png",
+    role: { en: "M.Sc. in Big Data Technology and Engineering, School of AI and Data Science, LDS Lab", zh: "大数据技术与工程硕士，人工智能与数据科学学院，LDS 实验室" },
+    period: { en: "2026 – Present", zh: "2026 – 至今" },
   },
   {
-    id: "mesa",
-    name: "MESA",
-    title: "MESA: Long-Horizon Agent Memory as an Emergent Society of Matter Agents",
-    kind: { en: "Agent memory", zh: "智能体记忆" },
-    summary: {
-      en: "Long-horizon agent memory modeled as an emergent society of Matter Agents.",
-      zh: "以 Matter Agents 的涌现社会为视角，探索智能体的长程记忆。",
-    },
+    id: "education-lzu",
+    name: { en: "Lanzhou University", zh: "兰州大学" },
+    href: "https://www.lzu.edu.cn/",
+    logo: "/assets/lzu-logo.png",
+    role: { en: "B.Eng. in Data Science and Big Data Technology", zh: "数据科学与大数据技术，本科" },
+    period: { en: "2022.09 – 2026.06", zh: "2022.09 – 2026.06" },
   },
 ]
 
@@ -62,17 +97,26 @@ export const researchProjects: ResearchProject[] = [
 export const openResearchAgent = {
   name: "Open-Research-Agent",
   summary: {
-    en: "An open-source research agent for planning experiments, checking evidence, and reading papers with source-linked guides.",
-    zh: "面向科研的开源智能体，支持研究规划、实验执行、证据核验，以及带原文引用的论文导读。",
+    en: "An open-source research agent that keeps its direction: a persistent research map, an independent advisor, and conclusions that must cite real logs or paper sentences.",
+    zh: "一个不偏航的开源科研智能体：持久化的研究地图、独立的顾问，结论必须引用真实的日志或论文原句。",
   },
-  capabilities: [
-    { en: "Persistent research map", zh: "持久化研究地图" },
-    { en: "Evidence checks", zh: "证据核验" },
-    { en: "Paper reading", zh: "论文阅读" },
-  ],
   repository: "https://github.com/Jialei-03/open-research-agent",
   reader: "https://papers.dougao.online",
 }
+
+type ResearchProject = { id: string; title: string; summary: Localized }
+
+// Unreleased research; it gains paper and code links once it moves to the publication list.
+export const researchProjects: ResearchProject[] = [
+  {
+    id: "mesa",
+    title: "MESA: Long-Horizon Agent Memory as an Emergent Society of Matter Agents",
+    summary: {
+      en: "Long-horizon agent memory modeled as an emergent society of Matter Agents.",
+      zh: "以 Matter Agents 的涌现社会为视角，探索智能体的长程记忆。",
+    },
+  },
+]
 
 export type Publication = {
   id: string
@@ -188,27 +232,13 @@ export const news = [
     href: "https://arxiv.org/abs/2601.17438",
   },
   {
+    date: "2025.09",
+    text: { en: "Started a research internship at Upwork.", zh: "加入 Upwork 担任研究实习生。" },
+    href: "#experience-upwork",
+  },
+  {
     date: "2025.06",
     text: { en: "One paper accepted at ISCCN 2025.", zh: "一篇论文被 ISCCN 2025 录用。" },
     href: "https://doi.org/10.1145/3732945.3732960",
-  },
-]
-
-export const education = [
-  {
-    school: { en: "University of Science and Technology of China", zh: "中国科学技术大学" },
-    degree: { en: "M.Sc. in Big Data Technology and Engineering", zh: "大数据技术与工程，硕士研究生" },
-    details: { en: "School of Artificial Intelligence and Data Science, LDS Lab", zh: "人工智能与数据科学学院，LDS 实验室" },
-    period: { en: "2026 - Present", zh: "2026 - 至今" },
-    logo: "/assets/ustc-logo.png",
-    href: "https://sai.ustc.edu.cn/",
-  },
-  {
-    school: { en: "Lanzhou University", zh: "兰州大学" },
-    degree: { en: "B.Eng. in Data Science and Big Data Technology", zh: "数据科学与大数据技术，本科" },
-    details: { en: "", zh: "" },
-    period: { en: "2022.09 - 2026.06", zh: "2022.09 - 2026.06" },
-    logo: "/assets/lzu-logo.png",
-    href: "https://www.lzu.edu.cn/",
   },
 ]

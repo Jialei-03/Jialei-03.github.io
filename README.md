@@ -1,6 +1,6 @@
 # Jialei Li / 李嘉磊
 
-个人学术主页。使用 React、TypeScript、Vite、Tailwind CSS v4，以及通过官方 CLI 安装的 shadcn/ui Radix Nova 组件。
+个人主页，用于展示研究、实习经历与开源项目。使用 React、TypeScript、Vite、Tailwind CSS v4，以及通过官方 CLI 安装的 shadcn/ui Radix Nova 组件。
 
 ## 本地开发
 
@@ -17,16 +17,16 @@ pnpm dev
 
 统一编辑 `src/data/site.ts`：
 
-- `profile`：姓名、联系方式、简介和研究方向
-- `openResearchAgent`：Open-Research-Agent 的介绍、能力与源码 / 在线论文阅读入口
-- `researchProjects`：SWE-Clar、MESA 的完整标题、研究类别与中英文简介；`publicationId` 关联已公开论文，复用论文 / PDF / 代码入口
+- `profile`：姓名、侧栏身份（`roles`）、联系方式、简介（`bio`）、"近况"（`now`）与研究兴趣。简介等文字支持行内链接：写成 `{ text, href }`，`#` 开头的链接会在页面内跳转
+- `experience` / `education`：经历与教育，合并显示在"经历与教育"一节。`logoFill: true` 表示公司图标铺满方块（Upwork），学校徽标则放在白色方块里；`highlights` 是每段经历的成果，可链接到对应论文
+- `openResearchAgent`：Open-Research-Agent 的介绍与源码 / 在线论文阅读入口
+- `researchProjects`：尚未公开的在研课题（目前是 MESA），不提供链接；公开后移入 `publications`
 - `publications`：论文、作者、会议类型、配图及论文/PDF/代码链接
 - `news`：中英文动态
-- `education`：教育经历
 
-界面文本在 `src/App.tsx`，设计变量与响应式布局在 `src/index.css`。shadcn/ui 组件源代码位于 `src/components/ui/`，配置为 `components.json`。
+界面文本在 `src/App.tsx` 与 `src/components/`，动效工具在 `src/lib/motion.ts`，设计变量与响应式布局在 `src/index.css`。shadcn/ui 组件源代码位于 `src/components/ui/`，配置为 `components.json`。
 
-`public/assets/` 中的图片用于发布。`assets/` 保留素材源文件，便于后续调整。头像取自 [Jialei-03 的 GitHub 账号](https://github.com/Jialei-03)，使用 256px / 460px 的响应式 WebP，浏览器图标也由该头像生成。更换头像源文件 `assets/github-avatar.jpg` 后运行 `pnpm optimize:assets`，即可重新生成发布版本。论文配图也做了压缩。
+`public/assets/` 中的图片用于发布。`assets/` 保留素材源文件，便于后续调整。头像取自 [Jialei-03 的 GitHub 账号](https://github.com/Jialei-03)，Upwork 图标取自其官方 GitHub 组织 [upwork](https://github.com/upwork) 的头像，使用 256px / 460px 的响应式 WebP，浏览器图标也由该头像生成。更换头像源文件 `assets/github-avatar.jpg` 后运行 `pnpm optimize:assets`，即可重新生成发布版本。论文配图也做了压缩。
 
 SODA 按 [arXiv 最新版](https://arxiv.org/abs/2603.00700) 和[官方仓库](https://github.com/freyasa/SODA)列为 RecSys 2026 Short Paper，使用正式标题 **Distribution-Level Contrastive Supervision for Generative Recommendation**。SODA 配图取自论文 Figure 1（CC BY），来源已写入数据文件。
 
@@ -41,7 +41,7 @@ pnpm preview
 
 构建输出为 `dist/`，会预渲染个人资料、论文和动态，搜索引擎及关闭 JavaScript 的浏览器都能读取主要内容。网站运行时不需要 GitHub API 或远程字体服务。
 
-浏览器回归测试覆盖语言与主题偏好、论文筛选、键盘操作、动态定位、320px 至 1440px 的响应式布局、无 JavaScript 浏览和图片失败状态：
+浏览器回归测试覆盖实习经历与 Upwork 图标、经历与论文的对应关系、动效完成后的最终状态、语言与主题偏好、论文筛选、键盘操作、动态定位、320px 至 1440px 的响应式布局、无 JavaScript 浏览和图片失败状态：
 
 ```bash
 pnpm exec playwright install chromium
@@ -50,9 +50,17 @@ pnpm test
 
 ## 设计与组件
 
-以 Agents 和大语言模型作为首屏方向，依次展示开源项目、研究条目与论文。SWE-Clar 和 MESA 按需求澄清与代码能力评测、长程智能体记忆分别介绍。公开的 SWE-Clar 同时列入论文列表首位，并新增发布动态；SODA、UniGRec 和 ISCCN 论文保留完整信息，第一作者工作单独标注。深浅色使用相同语义变量，支持系统主题、手动切换及减少动态效果的偏好。
+学术主页布局：左侧固定头像、姓名、身份与联系方式，右侧依次是简介与近况、动态、论文、经历与教育、项目。白底、墨色文字，只用一种蓝色标示链接；字体使用系统字体（苹方 / SF），无需加载网络字体。
 
-组件通过 [shadcn/ui](https://ui.shadcn.com/) 的官方 CLI 安装并定制；[awesome-shadcn-ui](https://github.com/birobirobiro/awesome-shadcn-ui) 用于检索社区组件方案。它是资源目录，项目无需安装整份目录或未使用的组件库。
+动效集中在几处，并在系统开启"减少动态效果"时全部关闭：
+
+- 页面加载：头像由模糊渐清，随后姓名、身份与正文依次浮现
+- 滚动：首屏以下的论文、经历和项目在进入视野时依次滑入；关闭 JavaScript 或打印时内容直接可见
+- 切换深浅色：新主题以切换按钮为圆心扩散（View Transitions API，不支持的浏览器直接切换）
+- 筛选论文：论文平滑移动到新位置，选中标签的底色随之滑动；导航栏下划线跟随当前章节滑动
+- 细节：头像随鼠标轻微倾斜，链接下划线从左侧展开，论文配图悬停时轻微浮起
+
+深浅色使用相同语义变量，支持系统主题与手动切换。组件通过 [shadcn/ui](https://ui.shadcn.com/) 的官方 CLI 安装并定制。
 
 ## 发布
 
