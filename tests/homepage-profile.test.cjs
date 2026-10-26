@@ -56,7 +56,7 @@ test('the homepage lists the released SWE-Clar preprint alongside existing publi
   const page = await newPage();
   assert.equal(await page.title(), 'Jialei Li · Academic Homepage');
   assert.equal(await page.locator('#profile-name').textContent(), 'Jialei Li');
-  assert.match(await page.locator('#bio').textContent(), /master's student at the School of Artificial Intelligence and Data Science, University of Science and Technology of China, and a research intern at Upwork/);
+  assert.match(await page.locator('#bio').textContent(), /master's student at the School of Artificial Intelligence and Data Science, University of Science and Technology of China, in the LDS Lab/);
   assert.equal(await page.locator('.paper-item').count(), 4);
   assert.equal(await page.locator('.paper-item').first().getAttribute('id'), 'publication-swe-clar');
   const swe = page.locator('#publication-swe-clar');
@@ -83,11 +83,12 @@ test('Chinese content and the language preference survive a reload', async () =>
   await page.getByRole('button', { name: '切换到中文' }).click();
   assert.equal(await page.locator('html').getAttribute('lang'), 'zh-CN');
   assert.equal(await page.locator('#profile-name').textContent(), '李嘉磊');
-  assert.match(await page.locator('#bio').textContent(), /中国科学技术大学人工智能与数据科学学院的硕士生，也是 Upwork 的研究实习生/);
-  assert.match(await page.locator('#background-list').textContent(), /LDS 实验室/);
+  assert.match(await page.locator('#bio').textContent(), /中国科学技术大学人工智能与数据科学学院 LDS 实验室的硕士生/);
+  assert.match(await page.locator('#education-list').textContent(), /LDS 实验室/);
   assert.match(await page.locator('#publication-soda').textContent(), /短篇论文/);
-  assert.equal(await page.locator('#experience-heading').textContent(), '经历与教育');
-  assert.match(await page.locator('#experience-upwork').textContent(), /研究实习生.*2025\.09 – 至今/);
+  assert.equal(await page.locator('#education-heading').textContent(), '教育');
+  assert.match(await page.locator('#project-swe-clar').textContent(), /Upwork 项目.*第一作者/);
+  assert.doesNotMatch(await page.locator('body').textContent(), /研究实习生|实习生/);
   assert.match(await page.locator('#research-mesa').textContent(), /Matter Agents.*长程记忆/);
   assert.equal(await page.evaluate(() => localStorage.getItem('lang')), 'zh');
   await page.reload({ waitUntil: 'networkidle' });
@@ -99,25 +100,25 @@ test('Chinese content and the language preference survive a reload', async () =>
   await page.close();
 });
 
-test('the Upwork internship shows the company icon and links each claim to its paper', async () => {
+test('SWE-Clar appears as an Upwork project with the company icon, not as an internship', async () => {
   const page = await newPage();
-  const upwork = page.locator('#experience-upwork');
-  assert.equal(await upwork.getByRole('heading', { level: 3 }).textContent(), 'Upwork');
-  assert.equal(await upwork.getByRole('link', { name: 'Upwork' }).getAttribute('href'), 'https://www.upwork.com/');
-  assert.equal(await upwork.locator('.row-role').textContent(), 'Research Intern');
-  assert.equal(await upwork.locator('.row-period').textContent(), '2025.09 – Present');
-  await upwork.scrollIntoViewIfNeeded();
-  const icon = upwork.locator('.row-logo img');
+  const project = page.locator('#project-swe-clar');
+  assert.equal(await project.getByRole('heading', { level: 3 }).textContent(), 'SWE-Clar');
+  assert.match(await project.locator('.project-kind').textContent(), /^Upwork project\s*First author$/);
+  assert.equal(await project.getByRole('link', { name: 'Upwork project' }).getAttribute('href'), 'https://github.com/upwork');
+  assert.equal(await project.getByRole('link', { name: 'Code and data', exact: true }).getAttribute('href'), 'https://github.com/upwork/SWE-Clar');
+  assert.equal(await project.getByRole('link', { name: 'Paper', exact: true }).getAttribute('href'), 'https://arxiv.org/abs/2610.31854');
+  assert.match(await project.textContent(), /100 greenfield software tasks from real Upwork client jobs and 512 clarification questions/);
+  await project.scrollIntoViewIfNeeded();
+  const icon = project.locator('.project-org img');
   assert.equal(await icon.getAttribute('src'), '/assets/upwork-logo.webp');
-  await page.waitForFunction(() => document.querySelector('#experience-upwork .row-logo img').complete);
+  await page.waitForFunction(() => document.querySelector('#project-swe-clar .project-org img').complete);
   assert.ok(await icon.evaluate(image => image.naturalWidth > 0), 'The Upwork icon loads');
-  assert.deepEqual(await upwork.locator('.row-highlights a').evaluateAll(links => links.map(link => link.getAttribute('href'))), ['#publication-swe-clar', '#publication-unigrec', '#publication-soda']);
-  assert.match(await upwork.textContent(), /100 greenfield software tasks from real Upwork client jobs and 512 clarification questions/);
-  assert.equal(await page.locator('.profile-roles').getByRole('link', { name: /Research Intern/ }).getAttribute('href'), '#experience-upwork');
-  await page.getByRole('tab', { name: /Conference/ }).click();
-  await upwork.getByRole('link', { name: 'SWE-Clar' }).click();
-  assert.equal(await page.locator('.paper-item').count(), 4, 'A link into the paper list restores papers hidden by the filter');
-  assert.equal(new URL(page.url()).hash, '#publication-swe-clar');
+  const text = await page.locator('body').textContent();
+  assert.doesNotMatch(text, /Research Intern\b|intern at Upwork|internship at Upwork/i, 'Upwork is not described as an internship');
+  assert.equal(await page.locator('.profile-roles li').count(), 1);
+  assert.equal(await page.locator('.now-note').getByRole('link', { name: 'SWE-Clar' }).getAttribute('href'), '#project-swe-clar');
+  assert.equal(await page.locator('#experience').count(), 0);
   assert.deepEqual(page.errors, []);
   await page.close();
 });
@@ -129,7 +130,7 @@ test('projects link to the real repository, unreleased research has no links, an
   assert.equal(await project.getByRole('link', { name: 'Paper reader', exact: true }).getAttribute('href'), 'https://papers.dougao.online');
   assert.equal(await page.locator('#research-mesa').getByRole('link').count(), 0, 'Unreleased research has no invented links');
   assert.equal(await page.locator('#research-mesa-title').textContent(), 'MESA: Long-Horizon Agent Memory as an Emergent Society of Matter Agents');
-  for (const [name, id] of [['News', 'news'], ['Papers', 'publications'], ['Experience', 'experience'], ['Projects', 'projects'], ['About', 'about']]) {
+  for (const [name, id] of [['News', 'news'], ['Papers', 'publications'], ['Projects', 'projects'], ['Education', 'education'], ['About', 'about']]) {
     await page.getByRole('navigation').getByRole('link', { name, exact: true }).click();
     assert.equal(new URL(page.url()).hash, `#${id}`);
     // Sections near the end cannot scroll all the way up, so only require them to be on screen.
@@ -233,7 +234,7 @@ test('the pre-rendered page includes identity, papers and contact without JavaSc
   assert.equal(await page.locator('.paper-item').count(), 4);
   assert.equal(await page.getByRole('heading', { name: 'Open-Research-Agent', exact: true }).count(), 1);
   assert.equal(await page.getByRole('heading', { name: /^SWE-Clar:/ }).count(), 1);
-  assert.match(await page.locator('#experience-upwork').textContent(), /Research Intern/);
+  assert.match(await page.locator('#project-swe-clar').textContent(), /Upwork project/);
   assert.equal(await page.locator('[data-reveal="pending"]').count(), 0, 'Nothing is hidden waiting for scripts');
   assert.equal(await page.getByRole('heading', { name: /^MESA:/ }).count(), 1);
   assert.match(await page.locator('#publication-soda').textContent(), /RecSys 2026/);

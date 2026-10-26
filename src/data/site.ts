@@ -8,7 +8,6 @@ export const profile = {
   name: { en: "Jialei Li", zh: "李嘉磊" },
   otherName: { en: "李嘉磊", zh: "Jialei Li" },
   roles: [
-    { title: { en: "Research Intern", zh: "研究实习生" }, place: { en: "Upwork, since Sep 2025", zh: "Upwork，2025 年 9 月至今" }, href: "#experience-upwork" },
     { title: { en: "M.Sc. Student", zh: "硕士研究生" }, place: { en: "University of Science and Technology of China, LDS Lab", zh: "中国科学技术大学，LDS 实验室" }, href: "#education-ustc" },
   ],
   email: "lijialei.cn@gmail.com",
@@ -18,17 +17,17 @@ export const profile = {
   avatarSmall: "/assets/github-avatar-small.webp",
   bio: {
     en: [
-      ["I am a master's student at the School of Artificial Intelligence and Data Science, ", { text: "University of Science and Technology of China", href: "https://sai.ustc.edu.cn/" }, ", and a research intern at ", { text: "Upwork", href: "#experience-upwork" }, ". I work on AI agents and large language models: whether coding agents can clarify what clients actually want, and how research agents can keep their direction and back claims with evidence."],
+      ["I am a master's student at the School of Artificial Intelligence and Data Science, ", { text: "University of Science and Technology of China", href: "https://sai.ustc.edu.cn/" }, ", in the LDS Lab. I work on AI agents and large language models: whether coding agents can clarify what clients actually want, and how research agents can keep their direction and back claims with evidence."],
       ["Before agents, I worked on generative recommendation. I also build open-source tools for research, including ", { text: "Open-Research-Agent", href: "#project-open-research-agent" }, "."],
     ],
     zh: [
-      ["我是", { text: "中国科学技术大学", href: "https://sai.ustc.edu.cn/" }, "人工智能与数据科学学院的硕士生，也是 ", { text: "Upwork", href: "#experience-upwork" }, " 的研究实习生。我研究智能体与大语言模型：编码智能体能否问清客户真正的需求，科研智能体如何不偏离方向、并用证据支撑结论。"],
+      ["我是", { text: "中国科学技术大学", href: "https://sai.ustc.edu.cn/" }, "人工智能与数据科学学院 LDS 实验室的硕士生。我研究智能体与大语言模型：编码智能体能否问清客户真正的需求，科研智能体如何不偏离方向、并用证据支撑结论。"],
       ["在此之前，我从事生成式推荐研究。我也开发面向科研的开源工具，例如 ", { text: "Open-Research-Agent", href: "#project-open-research-agent" }, "。"],
     ],
   } satisfies { en: Rich[]; zh: Rich[] },
   now: {
-    en: ["First author of ", { text: "SWE-Clar", href: "#publication-swe-clar" }, ", a benchmark for coding agents built from real Upwork client jobs. Looking for research internships on agents and LLMs."],
-    zh: ["以第一作者发布 ", { text: "SWE-Clar", href: "#publication-swe-clar" }, "，一个基于真实 Upwork 客户项目的编码智能体评测基准。正在寻找智能体与大语言模型方向的研究实习。"],
+    en: ["First author of ", { text: "SWE-Clar", href: "#project-swe-clar" }, ", a benchmark for coding agents built from real client jobs. Looking for research internships on agents and LLMs."],
+    zh: ["以第一作者发布 ", { text: "SWE-Clar", href: "#project-swe-clar" }, "，一个基于真实客户项目的编码智能体评测基准。正在寻找智能体与大语言模型方向的研究实习。"],
   } satisfies LocalizedRich,
   interests: [
     { en: "AI agents", zh: "智能体" },
@@ -38,49 +37,22 @@ export const profile = {
   updatedAt: "2026.10",
 }
 
-type Background = {
+type School = {
   id: string
   name: Localized
   href: string
   logo: string
-  // Company icons fill their tile; school emblems sit on a white tile.
-  logoFill?: boolean
-  role: Localized
+  degree: Localized
   period: Localized
-  highlights?: LocalizedRich[]
 }
 
-// The role title is kept generic. SWE-Clar is built from real Upwork client jobs and released
-// under github.com/upwork; UniGRec and SODA share Upwork co-authors.
-export const experience: Background[] = [
-  {
-    id: "experience-upwork",
-    name: { en: "Upwork", zh: "Upwork" },
-    href: "https://www.upwork.com/",
-    logo: "/assets/upwork-logo.webp",
-    logoFill: true,
-    role: { en: "Research Intern", zh: "研究实习生" },
-    period: { en: "2025.09 – Present", zh: "2025.09 – 至今" },
-    highlights: [
-      {
-        en: ["First author of ", { text: "SWE-Clar", href: "#publication-swe-clar" }, ": 100 greenfield software tasks from real Upwork client jobs and 512 clarification questions, used to evaluate nine frontier models."],
-        zh: ["以第一作者完成 ", { text: "SWE-Clar", href: "#publication-swe-clar" }, "：基于真实 Upwork 客户项目构建 100 个新建软件任务与 512 个需求澄清问题，评测了 9 个前沿模型。"],
-      },
-      {
-        en: ["Generative recommendation with ", { text: "UniGRec", href: "#publication-unigrec" }, " (first author) and ", { text: "SODA", href: "#publication-soda" }, " (RecSys 2026)."],
-        zh: ["生成式推荐研究：", { text: "UniGRec", href: "#publication-unigrec" }, "（第一作者）与 ", { text: "SODA", href: "#publication-soda" }, "（RecSys 2026）。"],
-      },
-    ],
-  },
-]
-
-export const education: Background[] = [
+export const education: School[] = [
   {
     id: "education-ustc",
     name: { en: "University of Science and Technology of China", zh: "中国科学技术大学" },
     href: "https://sai.ustc.edu.cn/",
     logo: "/assets/ustc-logo.png",
-    role: { en: "M.Sc. in Big Data Technology and Engineering, School of AI and Data Science, LDS Lab", zh: "大数据技术与工程硕士，人工智能与数据科学学院，LDS 实验室" },
+    degree: { en: "M.Sc. in Big Data Technology and Engineering, School of AI and Data Science, LDS Lab", zh: "大数据技术与工程硕士，人工智能与数据科学学院，LDS 实验室" },
     period: { en: "2026 – Present", zh: "2026 – 至今" },
   },
   {
@@ -88,10 +60,24 @@ export const education: Background[] = [
     name: { en: "Lanzhou University", zh: "兰州大学" },
     href: "https://www.lzu.edu.cn/",
     logo: "/assets/lzu-logo.png",
-    role: { en: "B.Eng. in Data Science and Big Data Technology", zh: "数据科学与大数据技术，本科" },
+    degree: { en: "B.Eng. in Data Science and Big Data Technology", zh: "数据科学与大数据技术，本科" },
     period: { en: "2022.09 – 2026.06", zh: "2022.09 – 2026.06" },
   },
 ]
+
+// SWE-Clar is an Upwork project: its tasks come from real Upwork client jobs and the code is
+// released under github.com/upwork.
+export const sweClar = {
+  name: "SWE-Clar",
+  organization: { name: "Upwork", href: "https://github.com/upwork", logo: "/assets/upwork-logo.webp" },
+  kind: { en: "Upwork project", zh: "Upwork 项目" },
+  summary: {
+    en: "A benchmark of 100 greenfield software tasks from real Upwork client jobs and 512 clarification questions, testing whether coding agents clarify requirements before they build. Nine frontier models evaluated.",
+    zh: "基于真实 Upwork 客户项目的 100 个新建软件任务与 512 个需求澄清问题，检验编码智能体能否在动手前问清需求，并评测了 9 个前沿模型。",
+  },
+  code: "https://github.com/upwork/SWE-Clar",
+  publicationId: "swe-clar",
+}
 
 // Description and links verified against the public repository README.
 export const openResearchAgent = {
@@ -230,11 +216,6 @@ export const news = [
     date: "2026.01",
     text: { en: "UniGRec preprint is now available on arXiv.", zh: "UniGRec 预印本已发布于 arXiv。" },
     href: "https://arxiv.org/abs/2601.17438",
-  },
-  {
-    date: "2025.09",
-    text: { en: "Started a research internship at Upwork.", zh: "加入 Upwork 担任研究实习生。" },
-    href: "#experience-upwork",
   },
   {
     date: "2025.06",

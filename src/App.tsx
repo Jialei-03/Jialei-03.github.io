@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Profile } from "@/components/profile"
 import { Publication } from "@/components/publication"
-import { Background } from "@/components/background"
+import { Education } from "@/components/education"
 import { Projects } from "@/components/projects"
 import { RichText } from "@/components/rich-text"
 import { SiteControls, useLanguage } from "@/components/site-controls"
@@ -18,14 +18,14 @@ type Filter = "all" | "conference" | "preprint"
 const copy = {
   en: {
     skip: "Skip to main content", top: "Back to top", updated: "Updated",
-    about: "About", news: "News", papers: "Papers", experience: "Experience", projects: "Projects",
-    publications: "Publications", background: "Experience & Education", now: "Now", interests: "Research interests",
+    about: "About", news: "News", papers: "Papers", projects: "Projects", education: "Education",
+    publications: "Publications", now: "Now", interests: "Research interests",
     all: "All work", conference: "Conference", preprint: "Preprints",
   },
   zh: {
     skip: "跳到主内容", top: "返回顶部", updated: "更新于",
-    about: "关于", news: "动态", papers: "论文", experience: "经历", projects: "项目",
-    publications: "论文", background: "经历与教育", now: "近况", interests: "研究兴趣",
+    about: "关于", news: "动态", papers: "论文", projects: "项目", education: "教育",
+    publications: "论文", now: "近况", interests: "研究兴趣",
     all: "全部成果", conference: "会议论文", preprint: "预印本",
   },
 }
@@ -34,8 +34,8 @@ const sections = [
   { id: "about", label: "about" },
   { id: "news", label: "news" },
   { id: "publications", label: "papers" },
-  { id: "experience", label: "experience" },
   { id: "projects", label: "projects" },
+  { id: "education", label: "education" },
 ] as const
 
 const enter = (order: number) => ({ "--enter": order }) as CSSProperties
@@ -126,14 +126,14 @@ export default function App() {
           </Tabs>
         </section>
 
-        <section id="experience" className="main-section" aria-labelledby="experience-heading">
-          <h2 id="experience-heading" data-reveal="">{t.background}</h2>
-          <Background lang={lang} onNavigate={showAllPapers} />
-        </section>
-
         <section id="projects" className="main-section" aria-labelledby="projects-heading">
           <h2 id="projects-heading" data-reveal="">{t.projects}</h2>
           <Projects lang={lang} />
+        </section>
+
+        <section id="education" className="main-section" aria-labelledby="education-heading">
+          <h2 id="education-heading" data-reveal="">{t.education}</h2>
+          <Education lang={lang} />
         </section>
 
         <footer className="site-footer">
