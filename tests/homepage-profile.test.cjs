@@ -130,7 +130,7 @@ test('projects link to the real repository, unreleased research has no links, an
   assert.equal(await project.getByRole('link', { name: 'Paper reader', exact: true }).getAttribute('href'), 'https://papers.dougao.online');
   assert.equal(await page.locator('#research-mesa').getByRole('link').count(), 0, 'Unreleased research has no invented links');
   assert.equal(await page.locator('#research-mesa-title').textContent(), 'MESA: Long-Horizon Agent Memory as an Emergent Society of Matter Agents');
-  for (const [name, id] of [['News', 'news'], ['Papers', 'publications'], ['Projects', 'projects'], ['Education', 'education'], ['About', 'about']]) {
+  for (const [name, id] of [['News', 'news'], ['Papers', 'publications'], ['Projects', 'projects'], ['Products', 'products'], ['Education', 'education'], ['About', 'about']]) {
     await page.getByRole('navigation').getByRole('link', { name, exact: true }).click();
     assert.equal(new URL(page.url()).hash, `#${id}`);
     // Sections near the end cannot scroll all the way up, so only require them to be on screen.
@@ -138,6 +138,26 @@ test('projects link to the real repository, unreleased research has no links, an
     assert.ok(top >= 60 && top < height * .7, `${id} is visible below the header (${top}px)`);
   }
   assert.deepEqual(page.errors, []);
+  await page.close();
+});
+
+test('products show a live screenshot, open the live site, and swap the reader screenshot with the language', async () => {
+  const page = await newPage();
+  assert.equal(await page.locator('.product-card').count(), 2);
+  const dougao = page.locator('#product-dougao');
+  assert.equal(await dougao.getByRole('heading', { level: 3 }).textContent(), 'Dougao');
+  assert.match(await dougao.textContent(), /a photo or an AI prompt/);
+  assert.equal(await dougao.getByRole('link', { name: 'Open', exact: true }).getAttribute('href'), 'https://dougao.online/');
+  assert.equal(await dougao.getByRole('link', { name: 'Source code' }).count(), 0, 'Dougao has no public repository');
+  const reader = page.locator('#product-ora-reader');
+  assert.equal(await reader.getByRole('link', { name: 'Open', exact: true }).getAttribute('href'), 'https://papers.dougao.online/');
+  assert.equal(await reader.getByRole('link', { name: 'Source code', exact: true }).getAttribute('href'), 'https://github.com/Jialei-03/open-research-agent');
+  assert.equal(await reader.locator('img').getAttribute('src'), '/assets/ora-reader.en.webp');
+  await page.getByRole('button', { name: '切换到中文' }).click();
+  assert.equal(await reader.locator('img').getAttribute('src'), '/assets/ora-reader.zh.webp');
+  assert.equal(await dougao.getByRole('heading', { level: 3 }).textContent(), '豆稿');
+  assert.match(await dougao.textContent(), /由照片或 AI 生成/);
+  await assertHealthy(page);
   await page.close();
 });
 

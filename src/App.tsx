@@ -8,6 +8,7 @@ import { Profile } from "@/components/profile"
 import { Publication } from "@/components/publication"
 import { Education } from "@/components/education"
 import { Projects } from "@/components/projects"
+import { Products } from "@/components/products"
 import { RichText } from "@/components/rich-text"
 import { SiteControls, useLanguage } from "@/components/site-controls"
 import { news, profile, publications } from "@/data/site"
@@ -18,13 +19,13 @@ type Filter = "all" | "conference" | "preprint"
 const copy = {
   en: {
     skip: "Skip to main content", top: "Back to top", updated: "Updated",
-    about: "About", news: "News", papers: "Papers", projects: "Projects", education: "Education",
+    about: "About", news: "News", papers: "Papers", projects: "Projects", products: "Products", education: "Education",
     publications: "Publications", now: "Now", interests: "Research interests",
     all: "All work", conference: "Conference", preprint: "Preprints",
   },
   zh: {
     skip: "跳到主内容", top: "返回顶部", updated: "更新于",
-    about: "关于", news: "动态", papers: "论文", projects: "项目", education: "教育",
+    about: "关于", news: "动态", papers: "论文", projects: "项目", products: "产品", education: "教育",
     publications: "论文", now: "近况", interests: "研究兴趣",
     all: "全部成果", conference: "会议论文", preprint: "预印本",
   },
@@ -35,6 +36,7 @@ const sections = [
   { id: "news", label: "news" },
   { id: "publications", label: "papers" },
   { id: "projects", label: "projects" },
+  { id: "products", label: "products" },
   { id: "education", label: "education" },
 ] as const
 
@@ -129,6 +131,11 @@ export default function App() {
         <section id="projects" className="main-section" aria-labelledby="projects-heading">
           <h2 id="projects-heading" data-reveal="">{t.projects}</h2>
           <Projects lang={lang} />
+        </section>
+
+        <section id="products" className="main-section" aria-labelledby="products-heading">
+          <h2 id="products-heading" data-reveal="">{t.products}</h2>
+          <Products lang={lang} />
         </section>
 
         <section id="education" className="main-section" aria-labelledby="education-heading">

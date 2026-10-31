@@ -21,6 +21,7 @@ pnpm dev
 - `education`：教育经历，学校徽标放在白色方块里
 - `sweClar`：SWE-Clar 项目卡片（Upwork 项目，带 Upwork 图标），论文入口复用 `publications` 中的同名条目
 - `openResearchAgent`：Open-Research-Agent 的介绍与源码 / 在线论文阅读入口
+- `products`：已上线的产品（豆稿、ORA 论文阅读器），每个带一张截图；阅读器截图随语言切换中英文版本
 - `researchProjects`：尚未公开的在研课题（目前是 MESA），不提供链接；公开后移入 `publications`
 - `publications`：论文、作者、会议类型、配图及论文/PDF/代码链接
 - `news`：中英文动态
@@ -30,6 +31,8 @@ pnpm dev
 `public/assets/` 中的图片用于发布。`assets/` 保留素材源文件，便于后续调整。头像取自 [Jialei-03 的 GitHub 账号](https://github.com/Jialei-03)，Upwork 图标取自其官方 GitHub 组织 [upwork](https://github.com/upwork) 的头像，使用 256px / 460px 的响应式 WebP，浏览器图标也由该头像生成。更换头像源文件 `assets/github-avatar.jpg` 后运行 `pnpm optimize:assets`，即可重新生成发布版本。论文配图也做了压缩。
 
 SODA 按 [arXiv 最新版](https://arxiv.org/abs/2603.00700) 和[官方仓库](https://github.com/freyasa/SODA)列为 RecSys 2026 Short Paper，使用正式标题 **Distribution-Level Contrastive Supervision for Generative Recommendation**。SODA 配图取自论文 Figure 1（CC BY），来源已写入数据文件。
+
+产品截图的源文件在 `assets/`：豆稿取自 [dougao.online](https://dougao.online/) 工作台（2026.10 截取），论文阅读器取自 ORA 仓库 `docs/images/reader.*.png`，均裁到主要区域后由 `pnpm optimize:assets` 生成 WebP。
 
 SWE-Clar 按 [arXiv:2610.31854](https://arxiv.org/abs/2610.31854) 列为第一作者预印本，代码与数据入口为[官方仓库](https://github.com/upwork/SWE-Clar)。配图取自论文 Figure 2（CC BY 4.0），发布图片由原始 SVG 转为 WebP。
 

@@ -90,6 +90,47 @@ export const openResearchAgent = {
   reader: "https://papers.dougao.online",
 }
 
+type Product = {
+  id: string
+  name: Localized
+  summary: Localized
+  status: Localized
+  href: string
+  source?: string
+  image: Localized
+  imageAlt: Localized
+}
+
+// Products that are live on the web. Screenshots: dougao.online's workbench (captured 2026.10)
+// and the reader images from the ORA repository docs.
+export const products: Product[] = [
+  {
+    id: "dougao",
+    name: { en: "Dougao", zh: "豆稿" },
+    summary: {
+      en: "A fuse-bead pattern tool: turns a photo or an AI prompt into an editable pattern, with colour merging, bead inventory and offline-first cloud sync.",
+      zh: "拼豆图纸工具：由照片或 AI 生成可编辑的拼豆图纸，支持配色合并、豆子库存管理与离线优先的云同步。",
+    },
+    status: { en: "Live on the web", zh: "Web 版已上线" },
+    href: "https://dougao.online/",
+    image: { en: "/assets/dougao-workbench.webp", zh: "/assets/dougao-workbench.webp" },
+    imageAlt: { en: "Dougao workbench with ways to create a bead pattern: from a photo, a blank board, pixel art or AI", zh: "豆稿工作台：照片成图、空白画板、像素图转图纸与 AI 创作" },
+  },
+  {
+    id: "ora-reader",
+    name: { en: "ORA Paper Reader", zh: "ORA 论文阅读器" },
+    summary: {
+      en: "An agent-assisted paper reader: import a PDF or arXiv paper and get a guide whose every point links back to the page, with translation, notes and a library.",
+      zh: "Agent 辅助的论文阅读器：导入 PDF 或 arXiv 论文，生成每一条都能溯源到原文页码的导读，支持翻译、批注与文献库管理。",
+    },
+    status: { en: "Live · open source", zh: "已上线 · 开源" },
+    href: "https://papers.dougao.online/",
+    source: "https://github.com/Jialei-03/open-research-agent",
+    image: { en: "/assets/ora-reader.en.webp", zh: "/assets/ora-reader.zh.webp" },
+    imageAlt: { en: "ORA paper reader with a PDF on the left and an agent guide citing page numbers on the right", zh: "ORA 论文阅读器：左侧是论文 PDF，右侧是标注页码的 Agent 导读" },
+  },
+]
+
 type ResearchProject = { id: string; title: string; summary: Localized }
 
 // Unreleased research; it gains paper and code links once it moves to the publication list.

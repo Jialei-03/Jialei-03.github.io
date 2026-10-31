@@ -10,6 +10,10 @@ const tasks = [
   ["isccn-framework.png", "isccn-framework.webp", 306, 90],
   // Upwork's app icon, from the avatar of its GitHub organization (github.com/upwork).
   ["upwork-logo.jpg", "upwork-logo.webp", 128, 92],
+  // Product screenshots: dougao.online's workbench, and the reader from the ORA repository docs.
+  ["dougao-workbench.png", "dougao-workbench.webp", 960, 82],
+  ["ora-reader.zh.png", "ora-reader.zh.webp", 960, 82],
+  ["ora-reader.en.png", "ora-reader.en.webp", 960, 82],
 ]
 for (const [source, destination, width, quality] of tasks) {
   await sharp(fileURLToPath(new URL(`../assets/${source}`, import.meta.url)))
@@ -24,4 +28,4 @@ for (const [destination, width] of [["favicon.png", 64], ["apple-touch-icon.png"
     .png()
     .toFile(fileURLToPath(new URL(`../public/assets/${destination}`, import.meta.url)))
 }
-console.log("Optimized GitHub avatar, browser icons, logos and publication figures.")
+console.log("Optimized GitHub avatar, browser icons, logos, publication figures and product screenshots.")
