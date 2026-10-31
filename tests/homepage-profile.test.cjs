@@ -58,7 +58,7 @@ test('papers show where each one stands: two under review at WWW 2027, one at IC
   assert.equal(await page.locator('#profile-name').textContent(), 'Jialei Li');
   assert.match(await page.locator('#bio').textContent(), /master's student at the School of Artificial Intelligence and Data Science, University of Science and Technology of China, in the LDS Lab/);
   assert.equal(await page.locator('.paper-item').count(), 5);
-  assert.deepEqual(await page.locator('.paper-item').evaluateAll(papers => papers.map(paper => paper.id)), ['publication-swe-clar', 'publication-unigrec', 'publication-mesa', 'publication-soda', 'publication-isccn']);
+  assert.deepEqual(await page.locator('.paper-item').evaluateAll(papers => papers.map(paper => paper.id)), ['publication-swe-clar', 'publication-mesa', 'publication-unigrec', 'publication-soda', 'publication-isccn']);
   const swe = page.locator('#publication-swe-clar');
   assert.match(await swe.locator('.paper-venue').textContent(), /^WWW 2027\s*Under review\s*Co-first author$/);
   assert.match(await page.locator('#publication-unigrec .paper-venue').textContent(), /^ICLR 2027\s*Under review\s*First author$/);

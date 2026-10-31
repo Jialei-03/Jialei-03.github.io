@@ -97,7 +97,7 @@ export const experience: Experience[] = [
     outputs: [
       { paperId: "swe-clar", summary: { en: "A benchmark built from real client jobs that tests whether coding agents clarify requirements and deliver working software.", zh: "基于真实客户项目，构建评测编码智能体需求澄清与软件交付能力的基准。" } },
       { paperId: "unigrec", summary: { en: "Differentiable soft identifiers that optimise the item tokenizer and the generative recommender end to end.", zh: "提出可微软标识符，实现物品 tokenizer 与生成式推荐模型端到端联合优化。" } },
-      { paperId: "soda", summary: { en: "Distribution-level contrastive supervision that gives generative recommendation finer soft semantics.", zh: "参与提出分布级对比监督，为生成式推荐引入更细致的软语义监督。" } },
+      { paperId: "soda", summary: { en: "Distribution-level contrastive supervision that gives generative recommendation finer soft semantics.", zh: "提出分布级对比监督，为生成式推荐引入更细致的软语义监督。" } },
     ],
   },
 ]
@@ -143,8 +143,8 @@ export const products: Product[] = [
     id: "ora-reader",
     name: { en: "ORA Paper Reader", zh: "ORA 论文阅读器" },
     summary: {
-      en: "An agent-assisted paper reader: import a PDF or arXiv paper and get a guide whose every point links back to the page, with translation, notes and a library.",
-      zh: "Agent 辅助的论文阅读器：导入 PDF 或 arXiv 论文，生成每一条都能溯源到原文页码的导读，支持翻译、批注与文献库管理。",
+      en: "An agent-assisted paper reader: import a PDF or arXiv paper and get a guide whose every point links back to the page. The agent also helps take notes and recommends papers that match your research interests.",
+      zh: "Agent 辅助的论文阅读器：导入 PDF 或 arXiv 论文，生成每一条都能溯源到原文页码的导读；Agent 还能辅助记笔记，并推荐符合研究兴趣的论文。",
     },
     status: { en: "Live · open source", zh: "已上线 · 开源" },
     href: "https://papers.dougao.online/",
@@ -210,6 +210,23 @@ export const publications: Publication[] = [
     imageAlt: "SWE-Clar benchmark workflow with requirement clarification and independent implementation and clarification evaluation branches",
   },
   {
+    id: "mesa",
+    name: "MESA",
+    title: "MESA: Long-Term Agent Memory as an Emergent Society of Agents",
+    authorship: "co-first",
+    venue: "WWW 2027",
+    year: "2026",
+    type: "review",
+    format: { en: "Under review", zh: "在投" },
+    description: {
+      en: "A long-term memory in which each matter the user pursues is owned by an agent that keeps its situation and decides whether a request concerns it; the society of agents grows from the user's history.",
+      zh: "长期记忆机制：用户的每件事由一个智能体负责，维护其状态并自主判断请求是否相关；智能体社会从用户历史中涌现。",
+    },
+    // Figure 1 of the submission; no links while it is under double-blind review.
+    image: "/assets/mesa-framework.webp",
+    imageAlt: "MESA running example: a user's matters over many sessions, a memory of pieces ranked by similarity, and MESA where each matter has an owner agent",
+  },
+  {
     id: "unigrec",
     name: "UniGRec",
     title: "UniGRec: Unified Generative Recommendation with Soft Identifiers for End-to-End Optimization",
@@ -228,23 +245,6 @@ export const publications: Publication[] = [
     code: "https://github.com/Jialei-03/UniGRec",
     image: "/assets/unigrec-framework.webp",
     imageAlt: "UniGRec unified generative recommendation framework",
-  },
-  {
-    id: "mesa",
-    name: "MESA",
-    title: "MESA: Long-Term Agent Memory as an Emergent Society of Agents",
-    authorship: "co-first",
-    venue: "WWW 2027",
-    year: "2026",
-    type: "review",
-    format: { en: "Under review", zh: "在投" },
-    description: {
-      en: "A long-term memory in which each matter the user pursues is owned by an agent that keeps its situation and decides whether a request concerns it; the society of agents grows from the user's history.",
-      zh: "长期记忆机制：用户的每件事由一个智能体负责，维护其状态并自主判断请求是否相关；智能体社会从用户历史中涌现。",
-    },
-    // Figure 1 of the submission; no links while it is under double-blind review.
-    image: "/assets/mesa-framework.webp",
-    imageAlt: "MESA running example: a user's matters over many sessions, a memory of pieces ranked by similarity, and MESA where each matter has an owner agent",
   },
   {
     id: "soda",
