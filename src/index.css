@@ -209,6 +209,16 @@ section[id], article[id], li[id], #top, #main { scroll-margin-top: 88px; }
 .row-copy h3 a:hover { color: var(--link); }
 .row-role { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
 .row-period { color: var(--faint); font-size: 13.5px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.row-logo.is-filled { padding: 0; border: 0; }
+.row-logo.is-filled img { object-fit: cover; }
+.row-about { margin-left: 10px; color: var(--faint); }
+.row-detail { margin: 4px 0 0; color: var(--muted); font-size: 13.5px; line-height: 1.6; }
+.row-outputs { display: grid; gap: 12px; margin: 12px 0 0; padding: 0; list-style: none; }
+.row-outputs li { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; gap: 2px 12px; }
+.output-name { font-size: 15px; font-weight: 650; transition: color .2s; }
+.output-name:hover { color: var(--link); }
+.output-venue { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--muted); font-size: 13.5px; }
+.output-summary { grid-column: 1 / -1; margin: 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
 
 /* Projects */
 .project-list { display: grid; gap: 12px; }
@@ -315,6 +325,11 @@ html[data-transition="theme"]::view-transition-new(root) { animation: theme-reve
   .section-head { flex-direction: column; align-items: flex-start; }
   .publications-section [data-slot="tabs-trigger"] { padding: 0 10px; }
   .news-list li { grid-template-columns: 1fr; gap: 0; padding: 7px 0; }
+}
+
+/* "Under review" is the longest filter label; the three tabs still fit a 320px screen. */
+@media (max-width: 360px) {
+  .publications-section [data-slot="tabs-trigger"] { padding: 0 6px; }
 }
 
 @media print {

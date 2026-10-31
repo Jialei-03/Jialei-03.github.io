@@ -8,6 +8,8 @@ const tasks = [
   ["swe-clar-framework.svg", "swe-clar-framework.webp", 880, 90],
   ["unigrec-framework.png", "unigrec-framework.webp", 880, 90],
   ["isccn-framework.png", "isccn-framework.webp", 306, 90],
+  // Figure 1 of the MESA submission.
+  ["mesa-framework.png", "mesa-framework.webp", 880, 90],
   // Upwork's app icon, from the avatar of its GitHub organization (github.com/upwork).
   ["upwork-logo.jpg", "upwork-logo.webp", 128, 92],
   // Product screenshots: dougao.online's workbench, and the reader from the ORA repository docs.

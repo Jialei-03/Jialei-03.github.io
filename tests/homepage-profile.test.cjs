@@ -52,17 +52,16 @@ async function assertHealthy(page) {
   assert.equal(await page.locator('img').evaluateAll(images => images.every(image => image.complete && image.naturalWidth > 0)), true, 'All images load');
 }
 
-test('the homepage lists the released SWE-Clar preprint alongside existing publications', async () => {
+test('papers show where each one stands: two under review at WWW 2027, one at ICLR 2027, two published', async () => {
   const page = await newPage();
   assert.equal(await page.title(), 'Jialei Li · Academic Homepage');
   assert.equal(await page.locator('#profile-name').textContent(), 'Jialei Li');
   assert.match(await page.locator('#bio').textContent(), /master's student at the School of Artificial Intelligence and Data Science, University of Science and Technology of China, in the LDS Lab/);
-  assert.equal(await page.locator('.paper-item').count(), 4);
-  assert.equal(await page.locator('.paper-item').first().getAttribute('id'), 'publication-swe-clar');
+  assert.equal(await page.locator('.paper-item').count(), 5);
+  assert.deepEqual(await page.locator('.paper-item').evaluateAll(papers => papers.map(paper => paper.id)), ['publication-swe-clar', 'publication-unigrec', 'publication-mesa', 'publication-soda', 'publication-isccn']);
   const swe = page.locator('#publication-swe-clar');
-  assert.match(await swe.textContent(), /arXiv:2610\.31854/);
-  assert.equal(await swe.getByText('Preprint', { exact: true }).count(), 1);
-  assert.equal(await swe.getByText('First author', { exact: true }).count(), 1);
+  assert.match(await swe.locator('.paper-venue').textContent(), /^WWW 2027\s*Under review\s*Co-first author$/);
+  assert.match(await page.locator('#publication-unigrec .paper-venue').textContent(), /^ICLR 2027\s*Under review\s*First author$/);
   assert.equal(await swe.locator('.author-list strong').textContent(), 'Jialei Li');
   assert.equal(await swe.getByRole('link', { name: 'Paper', exact: true }).getAttribute('href'), 'https://arxiv.org/abs/2610.31854');
   assert.equal(await swe.getByRole('link', { name: 'PDF', exact: true }).getAttribute('href'), 'https://arxiv.org/pdf/2610.31854');
@@ -74,6 +73,12 @@ test('the homepage lists the released SWE-Clar preprint alongside existing publi
   assert.equal(await soda.getByRole('link', { name: 'Code', exact: true }).getAttribute('href'), 'https://github.com/freyasa/SODA');
   assert.equal(await soda.getByRole('link', { name: 'Paper', exact: true }).getAttribute('href'), 'https://doi.org/10.1145/3773078.3831770');
   assert.equal(await soda.locator('.author-list strong').textContent(), 'Jialei Li');
+  assert.equal(await soda.locator('.first-author').count(), 0, 'SODA lists him fifth');
+  const mesa = page.locator('#publication-mesa');
+  assert.equal(await mesa.getByRole('heading', { level: 3 }).textContent(), 'MESA: Long-Term Agent Memory as an Emergent Society of Agents');
+  assert.match(await mesa.locator('.paper-venue').textContent(), /^WWW 2027\s*Under review\s*Co-first author$/);
+  assert.equal(await mesa.getByRole('link').count(), 0, 'No links or author list while under double-blind review');
+  assert.equal(await mesa.locator('.author-list').count(), 0);
   await assertHealthy(page);
   await page.close();
 });
@@ -87,9 +92,10 @@ test('Chinese content and the language preference survive a reload', async () =>
   assert.match(await page.locator('#education-list').textContent(), /LDS 实验室/);
   assert.match(await page.locator('#publication-soda').textContent(), /短篇论文/);
   assert.equal(await page.locator('#education-heading').textContent(), '教育');
-  assert.match(await page.locator('#project-swe-clar').textContent(), /Upwork 项目.*第一作者/);
-  assert.doesNotMatch(await page.locator('body').textContent(), /研究实习生|实习生/);
-  assert.match(await page.locator('#research-mesa').textContent(), /Matter Agents.*长程记忆/);
+  assert.match(await page.locator('#experience-upwork').textContent(), /研究实习生.*纳斯达克上市的全球自由职业平台/);
+  assert.match(await page.locator('#experience-upwork').textContent(), /SWE-Clar.*WWW 2027 在投.*共同一作/);
+  assert.match(await page.locator('#publication-mesa').textContent(), /长期记忆机制/);
+  assert.equal(await page.getByRole('tab', { name: /在投/ }).count(), 1);
   assert.equal(await page.evaluate(() => localStorage.getItem('lang')), 'zh');
   await page.reload({ waitUntil: 'networkidle' });
   assert.equal(await page.title(), '李嘉磊 · 学术主页');
@@ -100,25 +106,28 @@ test('Chinese content and the language preference survive a reload', async () =>
   await page.close();
 });
 
-test('SWE-Clar appears as an Upwork project with the company icon, not as an internship', async () => {
+test('the Upwork internship lists its three papers, each linked to its entry with venue and authorship', async () => {
   const page = await newPage();
-  const project = page.locator('#project-swe-clar');
-  assert.equal(await project.getByRole('heading', { level: 3 }).textContent(), 'SWE-Clar');
-  assert.match(await project.locator('.project-kind').textContent(), /^Upwork project\s*First author$/);
-  assert.equal(await project.getByRole('link', { name: 'Upwork project' }).getAttribute('href'), 'https://github.com/upwork');
-  assert.equal(await project.getByRole('link', { name: 'Code and data', exact: true }).getAttribute('href'), 'https://github.com/upwork/SWE-Clar');
-  assert.equal(await project.getByRole('link', { name: 'Paper', exact: true }).getAttribute('href'), 'https://arxiv.org/abs/2610.31854');
-  assert.match(await project.textContent(), /100 greenfield software tasks from real Upwork client jobs and 512 clarification questions/);
-  await project.scrollIntoViewIfNeeded();
-  const icon = project.locator('.project-org img');
-  assert.equal(await icon.getAttribute('src'), '/assets/upwork-logo.webp');
-  await page.waitForFunction(() => document.querySelector('#project-swe-clar .project-org img').complete);
-  assert.ok(await icon.evaluate(image => image.naturalWidth > 0), 'The Upwork icon loads');
-  const text = await page.locator('body').textContent();
-  assert.doesNotMatch(text, /Research Intern\b|intern at Upwork|internship at Upwork/i, 'Upwork is not described as an internship');
-  assert.equal(await page.locator('.profile-roles li').count(), 1);
-  assert.equal(await page.locator('.now-note').getByRole('link', { name: 'SWE-Clar' }).getAttribute('href'), '#project-swe-clar');
-  assert.equal(await page.locator('#experience').count(), 0);
+  const upwork = page.locator('#experience-upwork');
+  assert.equal(await upwork.getByRole('heading', { level: 3 }).textContent(), 'Upwork');
+  assert.equal(await upwork.getByRole('link', { name: 'Upwork' }).getAttribute('href'), 'https://www.upwork.com/');
+  assert.equal(await upwork.locator('.row-role').textContent(), 'Research InternNasdaq-listed global freelance marketplace');
+  assert.equal(await upwork.locator('.row-period').textContent(), '2025.09 – 2026.10');
+  assert.deepEqual(await upwork.locator('.output-name').evaluateAll(links => links.map(link => [link.textContent, link.getAttribute('href')])), [
+    ['SWE-Clar', '#publication-swe-clar'], ['UniGRec', '#publication-unigrec'], ['SODA', '#publication-soda'],
+  ]);
+  assert.match(await upwork.locator('li', { has: page.locator('.output-name', { hasText: 'SWE-Clar' }) }).textContent(), /WWW 2027 Under review\s*Co-first author/);
+  // An output link brings back its paper even when the current filter hides it.
+  await page.getByRole('tab', { name: /Conference/ }).click();
+  await upwork.getByRole('link', { name: 'UniGRec' }).click();
+  assert.equal(await page.locator('.paper-item').count(), 5);
+  assert.equal(new URL(page.url()).hash, '#publication-unigrec');
+  await upwork.scrollIntoViewIfNeeded();
+  await page.waitForFunction(() => document.querySelector('#experience-upwork .row-logo img').complete);
+  assert.ok(await upwork.locator('.row-logo img').evaluate(image => image.naturalWidth > 0), 'The Upwork icon loads');
+  assert.match(await page.locator('#bio').textContent(), /From September 2025 to October 2026 I was a research intern at Upwork/);
+  assert.equal(await page.locator('.now-note').getByRole('link', { name: 'SWE-Clar' }).getAttribute('href'), '#publication-swe-clar');
+  assert.equal(await page.locator('#project-swe-clar').count(), 0, 'SWE-Clar is listed under the internship, not repeated as a project');
   assert.deepEqual(page.errors, []);
   await page.close();
 });
@@ -128,9 +137,12 @@ test('projects link to the real repository, unreleased research has no links, an
   const project = page.locator('#project-open-research-agent');
   assert.equal(await project.getByRole('link', { name: 'Source code', exact: true }).getAttribute('href'), 'https://github.com/Jialei-03/open-research-agent');
   assert.equal(await project.getByRole('link', { name: 'Paper reader', exact: true }).getAttribute('href'), 'https://papers.dougao.online');
-  assert.equal(await page.locator('#research-mesa').getByRole('link').count(), 0, 'Unreleased research has no invented links');
-  assert.equal(await page.locator('#research-mesa-title').textContent(), 'MESA: Long-Horizon Agent Memory as an Emergent Society of Matter Agents');
-  for (const [name, id] of [['News', 'news'], ['Papers', 'publications'], ['Projects', 'projects'], ['Products', 'products'], ['Education', 'education'], ['About', 'about']]) {
+  assert.match(await project.locator('.project-kind').textContent(), /in development/);
+  assert.equal(await page.locator('.project-card.is-wip').count(), 1, 'MESA moved to the paper list; only the contract-review agent is in progress');
+  assert.equal(await page.locator('#research-contract-review').getByRole('link').count(), 0, 'Work in progress has no invented links');
+  assert.match(await page.locator('#education-lzu').textContent(), /ranked 1st of 37.*National Scholarship/);
+  assert.match(await page.locator('.interest-tags').textContent(), /Agent-driven quant research/);
+  for (const [name, id] of [['News', 'news'], ['Papers', 'publications'], ['Experience', 'experience'], ['Projects', 'projects'], ['Products', 'products'], ['Education', 'education'], ['About', 'about']]) {
     await page.getByRole('navigation').getByRole('link', { name, exact: true }).click();
     assert.equal(new URL(page.url()).hash, `#${id}`);
     // Sections near the end cannot scroll all the way up, so only require them to be on screen.
@@ -171,8 +183,8 @@ test('motion: the theme, filter and scroll reveals animate and still land in the
   assert.equal(await page.evaluate(() => document.getAnimations().filter(animation => animation instanceof CSSTransition).length), 0);
   await page.waitForFunction(() => !document.documentElement.dataset.transition);
   await page.locator('#publications').scrollIntoViewIfNeeded();
-  await page.getByRole('tab', { name: /Preprints/ }).click();
-  await page.waitForFunction(() => document.querySelectorAll('.paper-item').length === 2);
+  await page.getByRole('tab', { name: /Under review/ }).click();
+  await page.waitForFunction(() => document.querySelectorAll('.paper-item').length === 3);
   const indicator = await page.evaluate(() => [document.querySelector('.tab-indicator').getBoundingClientRect().left, document.querySelector('[data-slot="tabs-trigger"][data-state="active"]').getBoundingClientRect().left]);
   await page.waitForTimeout(600);
   const settled = await page.evaluate(() => [document.querySelector('.tab-indicator').getBoundingClientRect().left, document.querySelector('[data-slot="tabs-trigger"][data-state="active"]').getBoundingClientRect().left]);
@@ -182,20 +194,20 @@ test('motion: the theme, filter and scroll reveals animate and still land in the
   });
   await page.waitForTimeout(1200);
   assert.equal(await page.locator('[data-reveal="pending"]').count(), 0, 'Everything is revealed after scrolling');
-  assert.equal(await page.locator('#research-mesa').evaluate(element => getComputedStyle(element).opacity), '1');
+  assert.equal(await page.locator('#experience-upwork').evaluate(element => getComputedStyle(element).opacity), '1');
   assert.deepEqual(page.errors, []);
   await page.close();
 });
 
 test('publication filters work with both pointer and keyboard', async () => {
   const page = await newPage();
-  await page.getByRole('tab', { name: /Preprints/ }).click();
-  assert.equal(await page.locator('.paper-item').count(), 2);
-  assert.equal(await page.locator('.paper-item').evaluateAll(papers => papers.every(paper => paper.dataset.paperType === 'preprint')), true);
+  await page.getByRole('tab', { name: /Under review/ }).click();
+  assert.equal(await page.locator('.paper-item').count(), 3);
+  assert.equal(await page.locator('.paper-item').evaluateAll(papers => papers.every(paper => paper.dataset.paperType === 'review')), true);
   await page.getByRole('tab', { name: /Conference/ }).click();
   assert.equal(await page.locator('.paper-item').count(), 2);
   await page.getByRole('tab', { name: /All work/ }).click();
-  assert.equal(await page.locator('.paper-item').count(), 4);
+  assert.equal(await page.locator('.paper-item').count(), 5);
   await page.getByRole('tab', { name: /All work/ }).focus();
   await page.keyboard.press('ArrowRight');
   await page.waitForFunction(() => document.querySelectorAll('.paper-item').length === 2);
@@ -208,11 +220,11 @@ test('news anchors restore SWE-Clar and SODA after their publication types are f
   const page = await newPage({ reducedMotion: 'reduce' });
   for (const item of [
     { filter: 'Conference', name: /SWE-Clar preprint is now available/, id: 'swe-clar' },
-    { filter: 'Preprints', name: /SODA appears at RecSys/, id: 'soda' },
+    { filter: 'Under review', name: /SODA appears at RecSys/, id: 'soda' },
   ]) {
     await page.getByRole('tab', { name: new RegExp(item.filter) }).click();
     await page.getByRole('link', { name: item.name }).click();
-    assert.equal(await page.locator('.paper-item').count(), 4);
+    assert.equal(await page.locator('.paper-item').count(), 5);
     assert.equal(new URL(page.url()).hash, `#publication-${item.id}`);
     const top = await page.locator(`#publication-${item.id}`).evaluate(element => element.getBoundingClientRect().top);
     assert.ok(top >= 64 && top < 200, `${item.id} is visible below the sticky header (${top}px)`);
@@ -251,10 +263,11 @@ test('both languages fit mobile, tablet and desktop without horizontal scrolling
 test('the pre-rendered page includes identity, papers and contact without JavaScript', async () => {
   const page = await newPage({ javaScriptEnabled: false });
   assert.equal(await page.locator('#profile-name').textContent(), 'Jialei Li');
-  assert.equal(await page.locator('.paper-item').count(), 4);
+  assert.equal(await page.locator('.paper-item').count(), 5);
   assert.equal(await page.getByRole('heading', { name: 'Open-Research-Agent', exact: true }).count(), 1);
   assert.equal(await page.getByRole('heading', { name: /^SWE-Clar:/ }).count(), 1);
-  assert.match(await page.locator('#project-swe-clar').textContent(), /Upwork project/);
+  assert.match(await page.locator('#experience-upwork').textContent(), /Research Intern/);
+  assert.equal(await page.locator('.product-card').count(), 2);
   assert.equal(await page.locator('[data-reveal="pending"]').count(), 0, 'Nothing is hidden waiting for scripts');
   assert.equal(await page.getByRole('heading', { name: /^MESA:/ }).count(), 1);
   assert.match(await page.locator('#publication-soda').textContent(), /RecSys 2026/);
@@ -270,7 +283,7 @@ test('an unavailable portrait has a visible fallback without breaking the page',
   await page.route('**/assets/github-avatar*.webp', route => route.abort());
   await page.goto(baseUrl, { waitUntil: 'networkidle' });
   assert.equal(await page.locator('.photo-fallback').textContent(), 'JL');
-  assert.equal(await page.locator('.paper-item').count(), 4);
+  assert.equal(await page.locator('.paper-item').count(), 5);
   assert.deepEqual(page.errors, []);
   await page.close();
 });

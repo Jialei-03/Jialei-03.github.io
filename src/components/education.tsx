@@ -7,6 +7,8 @@ export function Education({ lang }: { lang: Language }) {
       <div className="row-copy">
         <h3><a href={school.href} target="_blank" rel="noreferrer">{school.name[lang]}</a></h3>
         <p className="row-role">{school.degree[lang]}</p>
+        {school.details && <p className="row-detail">{school.details[lang]}</p>}
+        {school.honors && <p className="row-detail">{school.honors[lang]}</p>}
       </div>
       <span className="row-period">{school.period[lang]}</span>
     </li>)}

@@ -18,12 +18,12 @@ pnpm dev
 统一编辑 `src/data/site.ts`：
 
 - `profile`：姓名、侧栏身份（`roles`）、联系方式、简介（`bio`）、"近况"（`now`）与研究兴趣。简介等文字支持行内链接：写成 `{ text, href }`，`#` 开头的链接会在页面内跳转
-- `education`：教育经历，学校徽标放在白色方块里
-- `sweClar`：SWE-Clar 项目卡片（Upwork 项目，带 Upwork 图标），论文入口复用 `publications` 中的同名条目
+- `education`：教育经历，学校徽标放在白色方块里；`details` 与 `honors` 写成绩和奖项
+- `experience`：实习经历（Upwork 研究实习生，2025.09 – 2026.10），`outputs` 指向 `publications` 中的论文，会议、状态与作者身份从论文条目读取
 - `openResearchAgent`：Open-Research-Agent 的介绍与源码 / 在线论文阅读入口
 - `products`：已上线的产品（豆稿、ORA 论文阅读器），每个带一张截图；阅读器截图随语言切换中英文版本
-- `researchProjects`：尚未公开的在研课题（目前是 MESA），不提供链接；公开后移入 `publications`
-- `publications`：论文、作者、会议类型、配图及论文/PDF/代码链接
+- `researchProjects`：进行中、还没有论文的课题（目前是合同审查 Agent），不提供链接；投稿后移入 `publications`
+- `publications`：论文、作者、`authorship`（第一作者 / 共同一作）、会议与状态（会议论文 / 在投）、配图及论文/PDF/代码链接；双盲评审中的论文（MESA）不放作者名单和链接
 - `news`：中英文动态
 
 界面文本在 `src/App.tsx` 与 `src/components/`，动效工具在 `src/lib/motion.ts`，设计变量与响应式布局在 `src/index.css`。shadcn/ui 组件源代码位于 `src/components/ui/`，配置为 `components.json`。

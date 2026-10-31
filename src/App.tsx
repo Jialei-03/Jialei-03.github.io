@@ -9,25 +9,26 @@ import { Publication } from "@/components/publication"
 import { Education } from "@/components/education"
 import { Projects } from "@/components/projects"
 import { Products } from "@/components/products"
+import { Experience } from "@/components/experience"
 import { RichText } from "@/components/rich-text"
 import { SiteControls, useLanguage } from "@/components/site-controls"
 import { news, profile, publications } from "@/data/site"
 import { useIndicator, useScrollReveal, withViewTransition } from "@/lib/motion"
 
-type Filter = "all" | "conference" | "preprint"
+type Filter = "all" | "conference" | "review"
 
 const copy = {
   en: {
     skip: "Skip to main content", top: "Back to top", updated: "Updated",
-    about: "About", news: "News", papers: "Papers", projects: "Projects", products: "Products", education: "Education",
+    about: "About", news: "News", papers: "Papers", experience: "Experience", projects: "Projects", products: "Products", education: "Education",
     publications: "Publications", now: "Now", interests: "Research interests",
-    all: "All work", conference: "Conference", preprint: "Preprints",
+    all: "All work", conference: "Conference", review: "Under review",
   },
   zh: {
     skip: "跳到主内容", top: "返回顶部", updated: "更新于",
-    about: "关于", news: "动态", papers: "论文", projects: "项目", products: "产品", education: "教育",
+    about: "关于", news: "动态", papers: "论文", experience: "实习", projects: "项目", products: "产品", education: "教育",
     publications: "论文", now: "近况", interests: "研究兴趣",
-    all: "全部成果", conference: "会议论文", preprint: "预印本",
+    all: "全部成果", conference: "会议论文", review: "在投",
   },
 }
 
@@ -35,6 +36,7 @@ const sections = [
   { id: "about", label: "about" },
   { id: "news", label: "news" },
   { id: "publications", label: "papers" },
+  { id: "experience", label: "experience" },
   { id: "projects", label: "projects" },
   { id: "products", label: "products" },
   { id: "education", label: "education" },
@@ -115,17 +117,22 @@ export default function App() {
               <h2 id="publications-heading">{t.publications}</h2>
               <TabsList ref={tabsRef} aria-label={lang === "en" ? "Filter publications" : "筛选论文"} data-indicator={tabIndicator ? "" : undefined}>
                 {tabIndicator && <span className="tab-indicator" aria-hidden="true" style={{ transform: `translateX(${tabIndicator.left}px)`, width: tabIndicator.width }} />}
-                {(["all", "conference", "preprint"] as const).map((value) => <TabsTrigger value={value} key={value}>
+                {(["all", "conference", "review"] as const).map((value) => <TabsTrigger value={value} key={value}>
                   {t[value]}<span className="tab-count" aria-hidden="true">{value === "all" ? publications.length : publications.filter((paper) => paper.type === value).length}</span>
                 </TabsTrigger>)}
               </TabsList>
             </div>
-            {(["all", "conference", "preprint"] as const).map((value) => <TabsContent value={value} key={value}>
+            {(["all", "conference", "review"] as const).map((value) => <TabsContent value={value} key={value}>
               <div className="publication-list" id={value === filter ? "publication-list" : undefined}>
                 {publications.filter((paper) => value === "all" || paper.type === value).map((paper) => <Publication paper={paper} lang={lang} key={paper.id} />)}
               </div>
             </TabsContent>)}
           </Tabs>
+        </section>
+
+        <section id="experience" className="main-section" aria-labelledby="experience-heading">
+          <h2 id="experience-heading" data-reveal="">{lang === "en" ? "Experience" : "实习经历"}</h2>
+          <Experience lang={lang} onNavigate={showAllPapers} />
         </section>
 
         <section id="projects" className="main-section" aria-labelledby="projects-heading">
